@@ -18,7 +18,7 @@ uvx agentic-data-scientist "your query here"
 - Node.js (for Claude Code)
 - API keys:
   - `ANTHROPIC_API_KEY` for Claude (required)
-  - `OPENROUTER_API_KEY` for planning/review models (required)
+  - `NEXUS_URL` and `LITELLM_PROXY_API_KEY` for planning/review models via Nexus (required)
 
 ## Quick Start
 
@@ -29,16 +29,17 @@ Create a `.env` file in your project root:
 ```bash
 # Required: API keys
 ANTHROPIC_API_KEY=your_anthropic_key_here
-OPENROUTER_API_KEY=your_openrouter_key_here
+
+# Required: Nexus LiteLLM Proxy configuration
+NEXUS_URL=https://nexus-master.lmndstaging.com
+LITELLM_PROXY_API_KEY=sk-12345
 
 # Optional: Model configuration
 DEFAULT_MODEL=google/gemini-2.5-pro
 CODING_MODEL=claude-sonnet-4-5-20250929
 ```
 
-Get your API keys:
-- OpenRouter: https://openrouter.ai/keys
-- Anthropic: https://console.anthropic.com/
+Get your Anthropic API key at: https://console.anthropic.com/
 
 ### 2. Run your first query
 

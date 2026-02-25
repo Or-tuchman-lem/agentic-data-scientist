@@ -27,10 +27,10 @@ ds = DataScientist(
 
 **Note**: The multi-agent ADK workflow (`agent_type="adk"`) is the primary mode and recommended for most use cases. Direct mode is only for simple tasks that don't benefit from planning and validation.
 
-**Model Configuration**: Models are configured via environment variables and routed through OpenRouter:
+**Model Configuration**: Models are configured via environment variables and routed through Nexus (LiteLLM Proxy):
   - ADK agents: `DEFAULT_MODEL` (default: `google/gemini-2.5-pro`)
   - Coding agent: `CODING_MODEL` (default: `claude-sonnet-4-5-20250929`)
-  - Models with provider prefixes (e.g., `google/`, `anthropic/`) are automatically routed through OpenRouter
+  - Models are routed through Nexus proxy for the ADK agents
 
 #### Attributes
 
@@ -153,7 +153,7 @@ config = SessionConfig(
 - **working_dir** (str, optional): Custom working directory
 - **auto_cleanup** (bool): Whether to cleanup working directory after completion
 
-**Note**: Models are configured via environment variables (OPENROUTER_API_KEY, DEFAULT_MODEL, CODING_MODEL), not in the SessionConfig.
+**Note**: Models are configured via environment variables (NEXUS_URL, LITELLM_PROXY_API_KEY, DEFAULT_MODEL, CODING_MODEL), not in the SessionConfig.
 
 ### `Result`
 
@@ -420,16 +420,14 @@ For complete CLI documentation including all options, working directory behavior
 ### Required
 
 - **ANTHROPIC_API_KEY**: Anthropic API key for Claude (coding agent)
-- **OPENROUTER_API_KEY**: OpenRouter API key for planning/review agents
+- **NEXUS_URL**: URL for Nexus LiteLLM Proxy (default: `https://nexus-master.lmndstaging.com`)
+- **LITELLM_PROXY_API_KEY**: API key for Nexus proxy (default: `sk-12345`)
 
 ### Optional
 
-- **DEFAULT_MODEL**: Model for planning and review agents (default: `google/gemini-2.5-pro`, routed through OpenRouter)
+- **DEFAULT_MODEL**: Model for planning and review agents (default: `google/gemini-2.5-pro`, routed through Nexus)
 - **REVIEW_MODEL**: Model for review agents (default: same as DEFAULT_MODEL)
 - **CODING_MODEL**: Model for coding agent (default: `claude-sonnet-4-5-20250929`)
-- **OPENROUTER_API_BASE**: OpenRouter API base URL (default: `https://openrouter.ai/api/v1`)
-- **OR_SITE_URL**: Site URL for OpenRouter (default: `k-dense.ai`)
-- **OR_APP_NAME**: App name for OpenRouter (default: `Agentic Data Scientist`)
 
 ## Error Handling
 

@@ -16,7 +16,7 @@ from google.adk.models.lite_llm import LiteLlm
 from google.adk.models.llm_request import LlmRequest
 from google.genai import types as genai_types
 
-from agentic_data_scientist.agents.adk.utils import DEFAULT_MODEL_NAME, OPENROUTER_API_BASE, OPENROUTER_API_KEY
+from agentic_data_scientist.agents.adk.utils import DEFAULT_MODEL_NAME, NEXUS_API_BASE, NEXUS_API_KEY
 
 
 logger = logging.getLogger(__name__)
@@ -155,11 +155,11 @@ Be detailed and specific - this summary replaces the original events, so preserv
     try:
         # Create LiteLlm instance with the model NAME (string, not object!)
         llm = LiteLlm(
-            model=model_name,
+            model=f"litellm_proxy/{model_name}",
             num_retries=3,
             timeout=30,
-            api_base=OPENROUTER_API_BASE if OPENROUTER_API_KEY else None,
-            custom_llm_provider="openrouter" if OPENROUTER_API_KEY else None,
+            api_base=NEXUS_API_BASE,
+            api_key=NEXUS_API_KEY,
         )
 
         # Create LlmRequest with proper structure

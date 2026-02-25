@@ -21,20 +21,18 @@ logger = logging.getLogger(__name__)
 
 
 # Model configuration
-DEFAULT_MODEL_NAME = os.getenv("DEFAULT_MODEL", "google/gemini-2.5-pro")
-REVIEW_MODEL_NAME = os.getenv("REVIEW_MODEL", "google/gemini-2.5-pro")
+DEFAULT_MODEL_NAME = os.getenv("DEFAULT_MODEL", "gemini/gemini-2.5-pro")
+REVIEW_MODEL_NAME = os.getenv("REVIEW_MODEL", "gemini/gemini-2.5-pro")
 CODING_MODEL_NAME = os.getenv("CODING_MODEL", "claude-sonnet-4-5-20250929")
 
 logger.info(f"[AgenticDS] DEFAULT_MODEL={DEFAULT_MODEL_NAME}")
 logger.info(f"[AgenticDS] REVIEW_MODEL={REVIEW_MODEL_NAME}")
 logger.info(f"[AgenticDS] CODING_MODEL={CODING_MODEL_NAME}")
 
-# Configure LiteLLM for OpenRouter
-# OpenRouter requires specific environment variables and configuration
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-OPENROUTER_API_BASE = os.getenv("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1")
-OR_SITE_URL = os.getenv("OR_SITE_URL", "k-dense.ai")
-OR_APP_NAME = os.getenv("OR_APP_NAME", "Agentic Data Scientist")
+# Configure LiteLLM for Nexus (LiteLLM Proxy)
+NEXUS_URL = os.getenv("NEXUS_URL", "https://nexus-master.lmndstaging.com")
+NEXUS_API_KEY = os.getenv("LITELLM_PROXY_API_KEY", "sk-12345")
+NEXUS_API_BASE = f"{NEXUS_URL}/v1"
 
 # Export for use in event compression
 __all__ = [
@@ -42,37 +40,32 @@ __all__ = [
     'REVIEW_MODEL',
     'DEFAULT_MODEL_NAME',
     'REVIEW_MODEL_NAME',  # Export model name strings
-    'OPENROUTER_API_KEY',
-    'OPENROUTER_API_BASE',
+    'NEXUS_API_KEY',
+    'NEXUS_API_BASE',
     'get_generate_content_config',
     'exit_loop_simple',
     'is_network_disabled',
 ]
 
-# Set up LiteLLM environment for OpenRouter
-if OPENROUTER_API_KEY:
-    os.environ["OPENROUTER_API_KEY"] = OPENROUTER_API_KEY
-    logger.info("[AgenticDS] OpenRouter API key configured")
-else:
-    logger.warning("[AgenticDS] OPENROUTER_API_KEY not set - using default credentials")
+# Log Nexus configuration
+logger.info(f"[AgenticDS] Nexus API base: {NEXUS_API_BASE}")
 
 # Create LiteLLM model instances
-# LiteLLM will automatically route through OpenRouter when model names have the provider prefix (e.g., "google/", "anthropic/")
+# LiteLLM requires litellm_proxy/ prefix to route through Nexus proxy
 DEFAULT_MODEL = LiteLlm(
-    model=DEFAULT_MODEL_NAME,
+    model=f"litellm_proxy/{DEFAULT_MODEL_NAME}",
     num_retries=10,
     timeout=60,
-    # Additional OpenRouter-specific headers
-    api_base=OPENROUTER_API_BASE if OPENROUTER_API_KEY else None,
-    custom_llm_provider="openrouter" if OPENROUTER_API_KEY else None,
+    api_base=NEXUS_API_BASE,
+    api_key=NEXUS_API_KEY,
 )
 
 REVIEW_MODEL = LiteLlm(
-    model=REVIEW_MODEL_NAME,
+    model=f"litellm_proxy/{REVIEW_MODEL_NAME}",
     num_retries=10,
     timeout=60,
-    api_base=OPENROUTER_API_BASE if OPENROUTER_API_KEY else None,
-    custom_llm_provider="openrouter" if OPENROUTER_API_KEY else None,
+    api_base=NEXUS_API_BASE,
+    api_key=NEXUS_API_KEY,
 )
 
 # Language requirement (empty for English-only models)

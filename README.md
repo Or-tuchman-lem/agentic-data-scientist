@@ -38,7 +38,7 @@ Before using Agentic Data Scientist, you must have:
    Or visit [Claude Code Quickstart](https://code.claude.com/docs/en/quickstart)
 
 2. **Required API Keys** configured (see Configuration section below)
-   - OPENROUTER_API_KEY (for planning and review agents)
+   - NEXUS_URL and LITELLM_PROXY_API_KEY (for planning and review agents via Nexus)
    - ANTHROPIC_API_KEY (for coding agent)
 
 ### Installation
@@ -55,13 +55,13 @@ uvx agentic-data-scientist --mode simple "your query here"
 
 **API Keys**
 
-You must configure two API keys:
+You must configure API keys for both Nexus and Anthropic:
 
-1. **OpenRouter API Key** (required for planning and review agents):
+1. **Nexus LiteLLM Proxy** (required for planning and review agents):
    ```bash
-   export OPENROUTER_API_KEY="your_key_here"
+   export NEXUS_URL="https://nexus-master.lmndstaging.com"
+   export LITELLM_PROXY_API_KEY="sk-12345"
    ```
-   Get your key at: https://openrouter.ai/keys
 
 2. **Anthropic API Key** (required for coding agent):
    ```bash
@@ -71,7 +71,8 @@ You must configure two API keys:
 
 Alternatively, create a `.env` file in your project directory:
 ```bash
-OPENROUTER_API_KEY=your_key_here
+NEXUS_URL=https://nexus-master.lmndstaging.com
+LITELLM_PROXY_API_KEY=sk-12345
 ANTHROPIC_API_KEY=your_key_here
 ```
 
@@ -428,7 +429,7 @@ agentic-data-scientist/
 
 - Python 3.12+
 - Node.js (for Claude Code)
-- API keys for Anthropic and OpenRouter
+- API keys for Anthropic and Nexus (LiteLLM Proxy)
 
 ## Contributing
 

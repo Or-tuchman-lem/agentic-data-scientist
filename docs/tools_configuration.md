@@ -311,7 +311,8 @@ The `working_dir` parameter is automatically bound using `functools.partial` whe
 ## Environment Variables
 
 **Required for the Framework:**
-- `OPENROUTER_API_KEY`: Required for planning/review agents
+- `NEXUS_URL`: URL for Nexus LiteLLM Proxy (default: `https://nexus-master.lmndstaging.com`)
+- `LITELLM_PROXY_API_KEY`: API key for Nexus proxy (default: `sk-12345`)
 - `ANTHROPIC_API_KEY`: Required for coding agent
 
 **Optional for Tools:**
@@ -379,6 +380,6 @@ Web fetch operation exceeded timeout. Solutions:
 - No configuration needed for Skills
 
 **Environment Variables:**
-- Required: `OPENROUTER_API_KEY`, `ANTHROPIC_API_KEY`
+- Required: `NEXUS_URL`, `LITELLM_PROXY_API_KEY`, `ANTHROPIC_API_KEY`
 - Optional: `CONTEXT7_API_KEY` (only if using Context7)
 

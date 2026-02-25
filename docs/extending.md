@@ -161,7 +161,7 @@ Then load it:
 financial_prompt = load_prompt("plan_maker", domain="finance")
 ```
 
-**Note**: Models are configured via environment variables (`OPENROUTER_API_KEY`, `DEFAULT_MODEL`) and routed through OpenRouter.
+**Note**: Models are configured via environment variables (`NEXUS_URL`, `LITELLM_PROXY_API_KEY`, `DEFAULT_MODEL`) and routed through Nexus (LiteLLM Proxy).
 
 ### Prompt Variables
 
@@ -736,7 +736,8 @@ await pds.close()
 When extending the system, be aware of these environment variables:
 
 **Required:**
-- `OPENROUTER_API_KEY`: For ADK agents using DEFAULT_MODEL
+- `NEXUS_URL`: URL for Nexus LiteLLM Proxy (default: `https://nexus-master.lmndstaging.com`)
+- `LITELLM_PROXY_API_KEY`: API key for Nexus proxy (default: `sk-12345`)
 - `ANTHROPIC_API_KEY`: For Claude Code agent
 
 **Optional:**
@@ -744,7 +745,7 @@ When extending the system, be aware of these environment variables:
 - `REVIEW_MODEL`: Model for review agents (default: same as DEFAULT_MODEL)
 - `CODING_MODEL`: Model for coding agent (default: `claude-sonnet-4-5-20250929`)
 
-Models with provider prefixes (e.g., `google/`, `anthropic/`) are automatically routed through OpenRouter via LiteLLM.
+Models are routed through Nexus (LiteLLM Proxy) for the ADK agents.
 
 ## Best Practices
 

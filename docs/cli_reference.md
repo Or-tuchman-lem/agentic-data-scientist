@@ -344,7 +344,8 @@ cat query.txt | agentic-data-scientist --mode orchestrated --files data.csv
 The CLI respects these environment variables (set in `.env` file or shell):
 
 **Required:**
-- `OPENROUTER_API_KEY`: OpenRouter API key for planning/review agents
+- `NEXUS_URL`: URL for Nexus LiteLLM Proxy (default: `https://nexus-master.lmndstaging.com`)
+- `LITELLM_PROXY_API_KEY`: API key for Nexus proxy (default: `sk-12345`)
 - `ANTHROPIC_API_KEY`: Anthropic API key for coding agent
 
 **Optional:**
@@ -397,9 +398,9 @@ Check that:
 ### "API Key Not Found" Errors
 
 Ensure you have:
-- `OPENROUTER_API_KEY` set in environment or `.env` file
+- `NEXUS_URL` and `LITELLM_PROXY_API_KEY` set in environment or `.env` file
 - `ANTHROPIC_API_KEY` set in environment or `.env` file
-- API keys are valid and have sufficient credits
+- API keys are valid
 
 ### Working Directory Permission Errors
 
