@@ -60,9 +60,13 @@ def setup_skills_directory(working_dir: str) -> None:
 
     working_path = Path(working_dir)
     skills_dir = working_path / ".claude" / "skills"
+
+    if skills_dir.exists() and any(skills_dir.iterdir()):
+        logger.info(f"[Claude Code] Skills already present in {skills_dir}, skipping clone")
+        return
+
     skills_dir.mkdir(parents=True, exist_ok=True)
 
-    # Clone repo to temp directory
     with tempfile.TemporaryDirectory() as tmpdir:
         repo_url = "https://github.com/K-Dense-AI/claude-scientific-skills.git"
         tmp_repo = Path(tmpdir) / "claude-scientific-skills"

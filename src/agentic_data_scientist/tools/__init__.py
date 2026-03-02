@@ -12,6 +12,7 @@ from agentic_data_scientist.tools.file_ops import (
     read_file,
     read_media_file,
     search_files,
+    write_file,
 )
 from agentic_data_scientist.tools.web_ops import fetch_url
 
@@ -19,6 +20,7 @@ from agentic_data_scientist.tools.web_ops import fetch_url
 __all__ = [
     "read_file",
     "read_media_file",
+    "write_file",
     "list_directory",
     "directory_tree",
     "search_files",

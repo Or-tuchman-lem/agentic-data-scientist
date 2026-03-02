@@ -439,6 +439,7 @@ def create_agent(
         read_file,
         read_media_file,
         search_files,
+        write_file,
     )
 
     # Bind working_dir using wrapper functions that completely hide the parameter
@@ -469,6 +470,10 @@ def create_agent(
         """Get detailed metadata about a file."""
         return get_file_info(path, working_dir_str)
 
+    def write_file_bound(path: str, content: str) -> str:
+        """Write text content to a file. Use for saving reports, summaries, and analysis outputs."""
+        return write_file(path, working_dir_str, content)
+
     tools = [
         read_file_bound,
         read_media_file_bound,
@@ -482,7 +487,10 @@ def create_agent(
     if not is_network_disabled():
         tools.append(fetch_url)
 
-    logger.info(f"[AgenticDS] Configured {len(tools)} local tools")
+    # Summary agent needs write access to create summary.md
+    summary_tools = tools + [write_file_bound]
+
+    logger.info(f"[AgenticDS] Configured {len(tools)} local tools (+1 write tool for summary)")
 
     # ------------------------- Implementation Loop -------------------------
 
@@ -508,7 +516,7 @@ def create_agent(
         model=DEFAULT_MODEL,
         description="Summarizes results into a comprehensive pure text report.",
         instruction=summary_agent_instructions,
-        tools=tools,  # Needs tools to read files
+        tools=summary_tools,
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=True,

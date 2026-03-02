@@ -6,6 +6,7 @@ with optional conversation context and file handling.
 """
 
 import asyncio
+import json
 import logging
 import uuid
 from dataclasses import dataclass, field
@@ -99,25 +100,33 @@ class DataScientist:
         auto_cleanup: Optional[bool] = None,
     ):
         """Initialize Agentic Data Scientist core with configuration."""
-        # Generate session ID
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        unique_id = uuid.uuid4().hex[:8]
-        self.session_id = f"session_{timestamp}_{unique_id}"
-
         # Set up working directory
         if working_dir:
             self.working_dir = Path(working_dir)
             self.working_dir.mkdir(parents=True, exist_ok=True)
             self._user_provided_dir = True
-            # Default: don't cleanup user-provided directories
             self.auto_cleanup = auto_cleanup if auto_cleanup is not None else False
         else:
-            # Default to ./agentic_output/ subdirectory in current directory
             self.working_dir = Path("./agentic_output")
             self.working_dir.mkdir(parents=True, exist_ok=True)
             self._user_provided_dir = False
-            # Default: don't cleanup default directory
             self.auto_cleanup = auto_cleanup if auto_cleanup is not None else False
+
+        # Try to restore session from prior run in the same working directory
+        self._session_meta_path = self.working_dir / ".session_meta.json"
+        restored = self._load_session_meta()
+
+        if restored:
+            self.session_id = restored["session_id"]
+            self._is_follow_up = True
+            self._prior_queries = restored.get("queries", [])
+            logger.info(f"Restored session from prior run: {self.session_id} ({len(self._prior_queries)} prior queries)")
+        else:
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            unique_id = uuid.uuid4().hex[:8]
+            self.session_id = f"session_{timestamp}_{unique_id}"
+            self._is_follow_up = False
+            self._prior_queries = []
 
         self.config = SessionConfig(
             agent_type=agent_type,
@@ -128,13 +137,41 @@ class DataScientist:
 
         # ADK components
         self.agent = None
-        self.app = None  # Will store App instance for ADK agents
+        self.app = None
         self.session_service = None
         self.runner = None
 
         logger.info(f"Initialized Agentic Data Scientist session: {self.session_id}")
         logger.info(f"Working directory: {self.working_dir}")
         logger.info(f"Auto-cleanup enabled: {self.auto_cleanup}")
+
+    def _load_session_meta(self) -> Optional[Dict]:
+        """Load session metadata from prior run if it exists."""
+        try:
+            if self._session_meta_path.exists():
+                data = json.loads(self._session_meta_path.read_text())
+                if data.get("session_id"):
+                    return data
+        except Exception as e:
+            logger.warning(f"Failed to load session metadata: {e}")
+        return None
+
+    def _save_session_meta(self, query: str):
+        """Save session metadata for future follow-up runs."""
+        try:
+            self._prior_queries.append({
+                "query": query[:500],
+                "timestamp": datetime.now().isoformat(),
+            })
+            meta = {
+                "session_id": self.session_id,
+                "agent_type": self.config.agent_type,
+                "queries": self._prior_queries,
+                "last_updated": datetime.now().isoformat(),
+            }
+            self._session_meta_path.write_text(json.dumps(meta, indent=2))
+        except Exception as e:
+            logger.warning(f"Failed to save session metadata: {e}")
 
     async def _setup_agent(self):
         """Set up the agent and session service."""
@@ -241,20 +278,23 @@ class DataScientist:
                 source_path = Path(content)
                 if not source_path.exists():
                     raise FileNotFoundError(f"Source file not found: {source_path}")
-                file_path.write_bytes(source_path.read_bytes())
                 size_kb = source_path.stat().st_size / 1024
+                if file_path.exists() and file_path.stat().st_size == source_path.stat().st_size:
+                    logger.info(f"Skipped file (already exists, same size): {filename} ({size_kb:.1f} KB)")
+                else:
+                    file_path.write_bytes(source_path.read_bytes())
+                    logger.info(f"Saved file: {filename} ({size_kb:.1f} KB)")
             else:
                 raise TypeError(f"Invalid content type for {filename}: {type(content)}")
 
             file_info = FileInfo(name=filename, path=str(file_path), size_kb=size_kb)
             file_info_list.append(file_info)
-            logger.info(f"Saved file: {filename} ({size_kb:.1f} KB)")
 
         return file_info_list
 
     def prepare_prompt(self, message: str, file_info: Optional[List[FileInfo]] = None) -> str:
         """
-        Prepare the prompt with optional file information.
+        Prepare the prompt with optional file information and follow-up context.
 
         Parameters
         ----------
@@ -268,27 +308,76 @@ class DataScientist:
         str
             Complete prompt with file information
         """
-        if not file_info:
-            return message
+        prompt_parts = [message]
 
-        prompt_parts = [message, "", "=" * 60, "USER DATA FILES:"]
-        prompt_parts.append(f"The following files are available in your workspace at: {self.working_dir}/user_data/")
-        prompt_parts.append("")
-
-        for info in file_info:
-            prompt_parts.append(f"- user_data/{info.name} ({info.size_kb:.1f} KB)")
-
-        prompt_parts.extend(
-            [
+        if self._is_follow_up and self._prior_queries:
+            prompt_parts.extend([
                 "",
-                "These files are in your workspace under the 'user_data' folder.",
-                "You can directly read and analyze them.",
+                "=" * 60,
+                "FOLLOW-UP CONTEXT:",
+                "This is a follow-up query in an existing session. Prior queries in this session:",
+            ])
+            for i, pq in enumerate(self._prior_queries, 1):
+                prompt_parts.append(f"  {i}. {pq['query']}")
+            prompt_parts.extend([
+                "",
+                f"All prior outputs are preserved in the working directory: {self.working_dir}",
+                "Review existing files before starting new work — build on what's already there.",
                 "=" * 60,
                 "",
-            ]
-        )
+            ])
+
+        if file_info:
+            prompt_parts.extend(["", "=" * 60, "USER DATA FILES:"])
+            prompt_parts.append(f"The following files are available in your workspace at: {self.working_dir}/user_data/")
+            prompt_parts.append("")
+
+            for info in file_info:
+                prompt_parts.append(f"- user_data/{info.name} ({info.size_kb:.1f} KB)")
+
+            prompt_parts.extend(
+                [
+                    "",
+                    "These files are in your workspace under the 'user_data' folder.",
+                    "You can directly read and analyze them.",
+                    "=" * 60,
+                    "",
+                ]
+            )
+        elif self._is_follow_up:
+            existing_files = self._discover_existing_user_data()
+            if existing_files:
+                prompt_parts.extend(["", "=" * 60, "USER DATA FILES (from prior session):"])
+                prompt_parts.append(
+                    f"The following files are available in your workspace at: {self.working_dir}/user_data/"
+                )
+                prompt_parts.append("")
+                for name, size_kb in existing_files:
+                    prompt_parts.append(f"- user_data/{name} ({size_kb:.1f} KB)")
+                prompt_parts.extend(
+                    [
+                        "",
+                        "These files are in your workspace under the 'user_data' folder.",
+                        "You can directly read and analyze them.",
+                        "=" * 60,
+                        "",
+                    ]
+                )
 
         return "\n".join(prompt_parts)
+
+    def _discover_existing_user_data(self) -> List[tuple]:
+        """Discover existing files in user_data/ from prior runs."""
+        user_data_dir = self.working_dir / "user_data"
+        if not user_data_dir.exists():
+            return []
+        files = []
+        for file_path in user_data_dir.rglob('*'):
+            if file_path.is_file():
+                relative = file_path.relative_to(user_data_dir)
+                size_kb = file_path.stat().st_size / 1024
+                files.append((str(relative), size_kb))
+        return sorted(files)
 
     async def run_async(
         self,
@@ -344,6 +433,9 @@ class DataScientist:
 
             # Prepare prompt
             full_prompt = self.prepare_prompt(message, file_info)
+
+            # Persist session meta for future follow-up runs
+            self._save_session_meta(message)
 
             if stream:
                 return self._stream_responses(full_prompt, start_time)

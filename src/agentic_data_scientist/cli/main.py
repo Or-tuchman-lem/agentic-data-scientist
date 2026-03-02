@@ -181,13 +181,13 @@ def main(
         working_dir_to_use = None  # Will create temp dir
         auto_cleanup = True
     elif working_dir:
-        # Use custom directory, default to no cleanup unless keep_files is explicitly set
+        # Use custom directory, preserve files by default (same as default agentic_output/)
         working_dir_to_use = working_dir
-        auto_cleanup = not keep_files
+        auto_cleanup = False
     else:
         # Default to ./agentic_output/ with no cleanup
         working_dir_to_use = "./agentic_output"
-        auto_cleanup = not keep_files if keep_files else False
+        auto_cleanup = False
 
     # Create core instance
     try:
@@ -208,7 +208,7 @@ def main(
         log_path.parent.mkdir(parents=True, exist_ok=True)
 
         # Configure file handler for all logs
-        file_handler = logging.FileHandler(log_path, mode='w')
+        file_handler = logging.FileHandler(log_path, mode='a')
         file_handler.setLevel(logging.DEBUG if verbose else logging.INFO)
         file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 
@@ -255,6 +255,8 @@ def main(
             click.echo("Files will be cleaned up after completion")
         else:
             click.echo(f"Working directory: {core.working_dir}")
+            if core._is_follow_up:
+                click.echo(f"Follow-up query (session: {core.session_id}, {len(core._prior_queries)} prior queries)")
             if core.auto_cleanup:
                 click.echo("Files will be cleaned up after completion")
             else:

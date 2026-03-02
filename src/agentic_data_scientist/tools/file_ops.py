@@ -104,6 +104,43 @@ def _format_size(size_bytes: int) -> str:
     return f"{size_bytes:.1f} PB"
 
 
+def write_file(
+    path: str,
+    working_dir: str,
+    content: str,
+) -> str:
+    """
+    Write text content to a file inside the working directory.
+
+    Creates parent directories as needed. Overwrites the file if it exists.
+
+    Parameters
+    ----------
+    path : str
+        Relative path within the working directory (e.g. "summary.md")
+    working_dir : str
+        The working directory root (injected by the agent framework)
+    content : str
+        The text content to write
+
+    Returns
+    -------
+    str
+        Confirmation message with the file path and size
+    """
+    try:
+        target_path = _validate_path(path, working_dir)
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        target_path.write_text(content)
+        size = _format_size(target_path.stat().st_size)
+        return f"Successfully wrote {size} to {path}"
+    except ValueError as e:
+        return f"Error: {e}"
+    except Exception as e:
+        logger.error(f"Error writing file {path}: {e}")
+        return f"Error writing file: {e}"
+
+
 def read_file(
     path: str,
     working_dir: str,
