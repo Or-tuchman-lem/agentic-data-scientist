@@ -1,0 +1,22 @@
+# Virtual environments
+.venv/
+venv/
+
+# Large data files
+data/
+user_data/
+
+# Logs
+*.log
+
+# Skills (cloned repo, can be regenerated)
+.claude/
+
+# Session metadata
+.session_meta.json
+
+# OS files
+.DS_Store
+
+# Lock files
+uv.lock

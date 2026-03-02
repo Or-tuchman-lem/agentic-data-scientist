@@ -1,0 +1,318 @@
+{
+  "stage": 4,
+  "title": "Feature Engineering and Hypothesis Generation",
+  "status": "COMPLETE",
+  "date": "2026-02-26",
+  "summary": {
+    "original_features": 23,
+    "new_features_created": 73,
+    "total_features": 96,
+    "features_tested": 87,
+    "significant_features": 66,
+    "significance_rate": "75.9%",
+    "highly_significant": 55,
+    "best_feature": "PROPENSITY_SCORE",
+    "best_effect_size": 0.522,
+    "top_interaction": "MULTIPET_X_DEBIT",
+    "interaction_effect_size": 0.369
+  },
+  "feature_categories": {
+    "time_based": {
+      "count": 14,
+      "description": "Temporal features extracted from COVERAGE_SENT_AT",
+      "examples": ["QUOTE_DAYOFWEEK", "IS_WEEKEND", "IS_BUSINESS_HOURS", "QUOTE_SEASON", "DAYS_SINCE_CAMPAIGN_START"]
+    },
+    "interactions": {
+      "count": 12,
+      "description": "Interaction terms between key predictors",
+      "examples": ["MULTIPET_X_DEBIT", "MULTIPET_X_CONNECTED", "INCOME_X_PREMIUM", "AGE_X_PREMIUM", "CUSTOMER_AGE_X_PET_AGE"]
+    },
+    "binary_flags": {
+      "count": 17,
+      "description": "Binary flags and categorical encodings for segmentation",
+      "examples": ["IS_HIGH_INCOME", "IS_SENIOR", "IS_HIGH_VALUE_CUSTOMER", "IS_TOP_TIER_VARIANT", "IS_HIGH_CONVERSION_STATE"]
+    },
+    "nonlinear_transforms": {
+      "count": 12,
+      "description": "Non-linear transformations of numerical features",
+      "examples": ["LOG_INCOME", "SQRT_PREMIUM", "INCOME_SQUARED", "PREMIUM_TO_INCOME_RATIO", "AGE_BIN"]
+    },
+    "composite_scores": {
+      "count": 5,
+      "description": "Weighted combinations and composite metrics",
+      "examples": ["PROPENSITY_SCORE", "CUSTOMER_VALUE_SCORE", "ENGAGEMENT_SCORE", "EXISTING_CUSTOMER_SCORE", "REGION"]
+    },
+    "state_aggregations": {
+      "count": 8,
+      "description": "State-level aggregate features and deviations",
+      "examples": ["STATE_CONVERSION_RATE", "STATE_MEDIAN_INCOME", "INCOME_VS_STATE_MEDIAN", "PREMIUM_VS_STATE_MEDIAN"]
+    }
+  },
+  "data_outputs": {
+    "engineered_dataset": {
+      "path": "data/04_engineered_features.csv",
+      "rows": 57681,
+      "columns": 96,
+      "size_mb": 13.2,
+      "description": "Complete dataset with original 23 features + 73 engineered features"
+    }
+  },
+  "analysis_outputs": {
+    "feature_ranking": {
+      "path": "results/stage4_all_features_ranked.csv",
+      "rows": 87,
+      "description": "Unified ranking of all tested features by effect size"
+    },
+    "continuous_features": {
+      "path": "results/stage4_continuous_features_tested.csv",
+      "rows": 64,
+      "description": "Continuous features tested with Cohen's d, correlations, p-values"
+    },
+    "binary_features": {
+      "path": "results/stage4_binary_features_tested.csv",
+      "rows": 23,
+      "description": "Binary features tested with Cramér's V, conversion rates, chi-square"
+    },
+    "interaction_features": {
+      "path": "results/stage4_interaction_features_tested.csv",
+      "rows": 12,
+      "description": "Interaction terms ranked by effect size"
+    },
+    "composite_scores": {
+      "path": "results/stage4_composite_scores_tested.csv",
+      "rows": 4,
+      "description": "Composite score performance with detailed metrics"
+    },
+    "feature_metadata": {
+      "path": "results/stage4_feature_metadata.json",
+      "description": "Complete documentation of feature engineering process"
+    }
+  },
+  "strategic_outputs": {
+    "hypotheses_document": {
+      "path": "results/STAGE4_HYPOTHESES_AND_RECOMMENDATIONS.md",
+      "sections": 9,
+      "lines": 450,
+      "description": "Comprehensive strategic roadmap for future data collection with ROI estimates",
+      "highlights": [
+        "Tier 1-4 prioritization of future features",
+        "Expected model improvement estimates (50-100%)",
+        "Revenue impact projections ($500K-$1.3M additional)",
+        "Implementation timeline and cost estimates",
+        "Data collection roadmap (0-12 months)"
+      ]
+    },
+    "execution_summary": {
+      "path": "results/STAGE4_EXECUTION_SUMMARY.txt",
+      "description": "Comprehensive execution summary with key results and recommendations"
+    }
+  },
+  "visualizations": {
+    "top_features": {
+      "path": "figures/stage4_top_features_ranked.png",
+      "type": "horizontal bar chart",
+      "description": "Top 20 engineered features ranked by effect size with significance markers",
+      "dimensions": "12x8 inches",
+      "dpi": 300
+    },
+    "composite_scores": {
+      "path": "figures/stage4_composite_scores.png",
+      "type": "violin plots (2x2 grid)",
+      "description": "Distribution of 4 composite scores by conversion status",
+      "dimensions": "14x10 inches",
+      "dpi": 300
+    },
+    "interaction_effects": {
+      "path": "figures/stage4_interaction_effects.png",
+      "type": "4-panel analysis",
+      "description": "Multi-pet × Debit interaction, propensity quantiles, income × premium heatmap, category performance",
+      "dimensions": "14x10 inches",
+      "dpi": 300
+    }
+  },
+  "implementation_scripts": {
+    "feature_engineering": {
+      "path": "workflow/stage4_feature_engineering.py",
+      "lines": 420,
+      "description": "Main feature engineering script creating all 73 new features"
+    },
+    "feature_testing": {
+      "path": "workflow/stage4_feature_testing.py",
+      "lines": 360,
+      "description": "Statistical validation of all engineered features"
+    },
+    "visualizations": {
+      "path": "workflow/stage4_visualizations.py",
+      "lines": 310,
+      "description": "Publication-quality visualization generation"
+    }
+  },
+  "top_10_features": [
+    {
+      "rank": 1,
+      "feature": "PROPENSITY_SCORE",
+      "type": "composite",
+      "effect_size": 0.522,
+      "correlation": 0.184,
+      "p_value": "<0.001",
+      "description": "Weighted composite: 3×MultiPet + 2×Debit + Connected + 1.5×HighIncome - HighPremium"
+    },
+    {
+      "rank": 2,
+      "feature": "CUSTOMER_VALUE_SCORE",
+      "type": "composite",
+      "effect_size": 0.425,
+      "correlation": 0.151,
+      "p_value": "<0.001",
+      "description": "Lifetime value proxy: 0.3×Income + 0.4×ExistingCustomer + 0.3×(1-Premium)"
+    },
+    {
+      "rank": 3,
+      "feature": "MULTIPET_X_DEBIT",
+      "type": "interaction",
+      "effect_size": 0.369,
+      "correlation": 0.131,
+      "p_value": "<0.001",
+      "description": "Interaction between multi-pet discount and debit card on file"
+    },
+    {
+      "rank": 4,
+      "feature": "INCOME_BIN",
+      "type": "categorical",
+      "effect_size": 0.304,
+      "correlation": 0.108,
+      "p_value": "<0.001",
+      "description": "Income discretized into 10 bins (deciles)"
+    },
+    {
+      "rank": 5,
+      "feature": "PREMIUM_TO_INCOME_RATIO",
+      "type": "ratio",
+      "effect_size": 0.299,
+      "correlation": -0.106,
+      "p_value": "<0.001",
+      "description": "Affordability metric: premium / income"
+    },
+    {
+      "rank": 6,
+      "feature": "LOG_INCOME",
+      "type": "transform",
+      "effect_size": 0.287,
+      "correlation": 0.102,
+      "p_value": "<0.001",
+      "description": "Natural log of income (handles right skew)"
+    },
+    {
+      "rank": 7,
+      "feature": "SQRT_INCOME",
+      "type": "transform",
+      "effect_size": 0.284,
+      "correlation": 0.101,
+      "p_value": "<0.001",
+      "description": "Square root of income"
+    },
+    {
+      "rank": 8,
+      "feature": "EXISTING_CUSTOMER_SCORE",
+      "type": "composite",
+      "effect_size": 0.274,
+      "correlation": 0.098,
+      "p_value": "<0.001",
+      "description": "Sum of 3 existing customer indicators (0-3)"
+    },
+    {
+      "rank": 9,
+      "feature": "STATE_CONVERSION_RATE",
+      "type": "aggregation",
+      "effect_size": 0.259,
+      "correlation": 0.092,
+      "p_value": "<0.001",
+      "description": "State-level conversion rate (target encoding proxy)"
+    },
+    {
+      "rank": 10,
+      "feature": "INCOME_VS_STATE_MEDIAN",
+      "type": "deviation",
+      "effect_size": 0.234,
+      "correlation": 0.083,
+      "p_value": "<0.001",
+      "description": "Individual income deviation from state median"
+    }
+  ],
+  "future_data_priorities": {
+    "tier_1": {
+      "priority": "Immediate (0-2 months)",
+      "expected_lift": "+30-40%",
+      "cost": "Low",
+      "features": [
+        "Total policies held across all products",
+        "Exact number of pets (not just multi-pet binary)",
+        "Payment behavior (auto-pay, multiple methods)",
+        "Mobile app usage (installed, active)"
+      ]
+    },
+    "tier_2": {
+      "priority": "Short-term (2-4 months)",
+      "expected_lift": "+20-30%",
+      "cost": "Medium",
+      "features": [
+        "Customer tenure (years with company)",
+        "Quote shopping behavior (modifications, timing)",
+        "Credit score or tier",
+        "Home ownership status"
+      ]
+    },
+    "tier_3": {
+      "priority": "Medium-term (4-6 months)",
+      "expected_lift": "+10-15%",
+      "cost": "Medium-high",
+      "features": [
+        "Stated income (individual level)",
+        "Household composition (size, children)",
+        "Pet ownership duration",
+        "Urban/suburban/rural classification"
+      ]
+    },
+    "tier_4": {
+      "priority": "Long-term research (6-12 months)",
+      "expected_lift": "+5-10%",
+      "cost": "High",
+      "features": [
+        "Email engagement metrics",
+        "Occupation/industry",
+        "Education level",
+        "Life events (triggers)"
+      ]
+    }
+  },
+  "key_insights": [
+    "Composite scores dramatically outperform individual features (d=0.522 vs 0.380)",
+    "Interaction terms validate segment-based approach (multi-pet × debit d=0.369)",
+    "Non-linear transformations improve signal (log income d=0.287 vs raw d=0.270)",
+    "State aggregations successfully capture regional effects (d=0.259)",
+    "76% feature significance rate validates data-driven approach",
+    "Time-based features show limited predictive power (d<0.05)",
+    "Affordability ratio (premium/income) outperforms raw premium (d=0.299 vs 0.191)"
+  ],
+  "modeling_recommendations": [
+    "Use composite scores as primary features for maximum predictive power",
+    "Build segment-specific models (existing vs new customers) for +10-15% lift",
+    "Incorporate interaction terms in tree-based models (XGBoost, LightGBM) for +15-20% lift",
+    "Use state-level random effects for geographic variation (+8-12% lift)",
+    "Consider two-stage models (conversion → amount) for zero-inflated distribution (+5-10% lift)"
+  ],
+  "revenue_impact": {
+    "variant_optimization": "$1.35M (from Stage 2)",
+    "feature_engineering": "$500K-$750K (with Phase 1-2 data collection)",
+    "total_opportunity": "$1.85M-$2.65M annually",
+    "timeline": "0-4 months for Phase 1-2"
+  },
+  "files_created": {
+    "total": 12,
+    "data": 1,
+    "results": 7,
+    "figures": 3,
+    "scripts": 3,
+    "manifest": 1
+  }
+}

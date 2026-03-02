@@ -1,0 +1,63 @@
+{
+  "top_10_by_effect_size": {
+    "features": [
+      "PROPENSITY_SCORE",
+      "CUSTOMER_VALUE_SCORE",
+      "MULTIPET_X_DEBIT",
+      "INCOME_BIN",
+      "PREMIUM_TO_INCOME_RATIO",
+      "LOG_INCOME",
+      "SQRT_INCOME",
+      "EXISTING_CUSTOMER_SCORE",
+      "STATE_CONVERSION_RATE",
+      "INCOME_VS_STATE_MEDIAN"
+    ],
+    "rationale": "Top 10 features by Cohen's d effect size",
+    "expected_performance": "Best predictive power, may have some redundancy"
+  },
+  "low_vif_high_effect": {
+    "features": [
+      "ENGAGEMENT_SCORE",
+      "IS_LOW_INCOME",
+      "STATE_CONVERSION_RATE"
+    ],
+    "rationale": "Features with VIF<5 and effect size>0.2 (low multicollinearity, strong signal)",
+    "expected_performance": "Good balance of predictive power and independence"
+  },
+  "minimal_redundancy": {
+    "features": [
+      "PROPENSITY_SCORE",
+      "INCOME_BIN",
+      "PREMIUM_TO_INCOME_RATIO",
+      "STATE_CONVERSION_RATE",
+      "IS_HIGH_PREMIUM",
+      "IS_YOUNG_ADULT",
+      "IS_SENIOR_PET",
+      "MULTIPET_X_INCOME",
+      "IS_HIGH_CONVERSION_STATE",
+      "PREMIUM_SQUARED",
+      "IS_LOW_PREMIUM",
+      "STATE_MEDIAN_AGE",
+      "AGE_SQUARED",
+      "IS_YOUNG_PET",
+      "DEBIT_X_INCOME",
+      "INCOME_SQUARED",
+      "DAYS_SINCE_CAMPAIGN_START",
+      "MULTIPET_X_AGE",
+      "AGE_X_PREMIUM",
+      "CUSTOMER_AGE_X_PET_AGE"
+    ],
+    "rationale": "Greedy selection to minimize correlation while maximizing effect size",
+    "expected_performance": "Maximum feature independence, moderate predictive power"
+  },
+  "composite_only": {
+    "features": [
+      "PROPENSITY_SCORE",
+      "CUSTOMER_VALUE_SCORE",
+      "ENGAGEMENT_SCORE",
+      "EXISTING_CUSTOMER_SCORE"
+    ],
+    "rationale": "Composite scores only (hand-crafted combinations)",
+    "expected_performance": "Strong signal with minimal features"
+  }
+}

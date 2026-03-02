@@ -1,0 +1,429 @@
+================================================================================
+RANDOMIZATION QUALITY ASSESSMENT REPORT
+Pet Insurance A/B Test - Treatment Variant Assignment
+================================================================================
+
+Date: 2026-02-26
+Analyst: Agentic Data Scientist
+Dataset: 57,681 quotes across 27 treatment variants
+Period: May 28, 2025 - January 8, 2026 (225 days)
+
+================================================================================
+EXECUTIVE SUMMARY
+================================================================================
+
+OVERALL GRADE: F - FAILED RANDOMIZATION
+
+Only 1 out of 13 balance tests passed (7.7%)
+
+CRITICAL FINDING: The treatment variant assignment shows severe systematic
+imbalances across customer demographics, pet characteristics, and time. This
+means observed variant performance differences may be confounded by customer
+characteristics rather than true treatment effects.
+
+IMPACT ON ANALYSIS:
+- ⚠️  Causal inference is NOT valid without covariate adjustment
+- ⚠️  Variant rankings may be biased by customer composition
+- ⚠️  Simple comparisons (e.g., Stage 2 analysis) are potentially misleading
+- ⚠️  Model predictions may conflate customer effects with treatment effects
+
+RECOMMENDED ACTIONS:
+1. Use covariate-adjusted analysis (ANCOVA, propensity score matching)
+2. Build regression models controlling for all imbalanced features
+3. Segment analysis by customer type (existing vs new customers)
+4. Investigate root cause of assignment mechanism
+5. Consider re-randomization for future experiments
+
+================================================================================
+DETAILED FINDINGS
+================================================================================
+
+1. SAMPLE SIZE BALANCE: ⚠️  FAILED (χ²=44.73, p=0.013)
+------------------------------------------------------------------------
+
+Sample Distribution:
+- Expected per variant: 2,136 quotes
+- Actual range: 2,026 - 2,247 quotes
+- Standard deviation: 60.6 quotes
+- Coefficient of variation: 2.84%
+
+ASSESSMENT: Sample sizes differ significantly from uniform distribution.
+While the imbalance is modest (±5% from expected), it's statistically
+significant, suggesting non-random assignment.
+
+PRACTICAL IMPACT: Low - sample sizes are reasonably balanced
+
+
+2. CONTINUOUS FEATURE BALANCE: ⚠️  ALL FAILED (0/5 tests passed)
+------------------------------------------------------------------------
+
+Feature                          H-stat    P-value   Variant Range    CV
+----                             ------    -------   -------------    ----
+IMPUTED_AGE                      64.31     <0.0001   38.9 - 41.0     1.41%
+MEDIAN_HOUSEHOLD_INCOME_2020     67.17     <0.0001   $82K - $88K     1.48%
+PET_AGE_YEARS                    66.56     <0.0001   3.1 - 3.5 yrs   3.40%
+BASE_PREMIUM                    419.04     <0.0001   $445 - $584     6.12%
+PIT_ANNUAL_PREMIUM              422.03     <0.0001   $441 - $581     6.14%
+
+ASSESSMENT: All continuous features show statistically significant
+imbalance across variants. Most concerning are BASE_PREMIUM and
+PIT_ANNUAL_PREMIUM with 6% CV - this indicates systematic differences
+in the quoted premiums across variants.
+
+KEY INSIGHT: Premium imbalances are EXPECTED by design because variants
+have different parameters (deductible, limit, coinsurance) which directly
+affect pricing. However, customer demographics (age, income, pet age)
+should NOT differ if assignment was random.
+
+PRACTICAL IMPACT: HIGH - Customer characteristics systematically differ
+across variants, confounding treatment effects.
+
+
+3. CATEGORICAL FEATURE BALANCE: ⚠️  MOSTLY FAILED (1/6 tests passed)
+------------------------------------------------------------------------
+
+Feature                           χ²       P-value   Cramér's V   Result
+----                              ---      -------   ----------   ------
+HAS_MULTIPLE_PET_DISCOUNT        52.23     0.0017      0.0301    FAILED
+HAS_DEBIT_CARD                   78.70    <0.0001      0.0369    FAILED
+HAS_STRONGLY_CONNECTED_USERS     86.83    <0.0001      0.0388    FAILED
+STATE                         2,703.80    <0.0001      0.0425    FAILED
+DESIGNER_BREED                   70.37     0.0457      0.0247    FAILED
+PET_SEX                          37.32     0.0699      0.0254    PASSED ✓
+
+ASSESSMENT: Only PET_SEX is balanced. All other features show significant
+imbalances, particularly:
+
+- STATE (χ²=2,704): Massive imbalance suggests geographic clustering
+  of variants. Some states may have been preferentially assigned certain
+  variants.
+
+- EXISTING CUSTOMER INDICATORS: All three existing customer features
+  (multi-pet discount, debit card, strongly connected users) show
+  significant imbalance. This means some variants got more existing
+  customers than others.
+
+KEY INSIGHT: Existing customers have 3-4× higher conversion rates (see
+Stage 3 analysis). If they're unequally distributed across variants, this
+creates a massive confound.
+
+PRACTICAL IMPACT: CRITICAL - Existing customer imbalance is the most
+severe confound. Variants with more existing customers will appear to
+perform better regardless of actual treatment effects.
+
+
+4. TEMPORAL BALANCE: ⚠️  FAILED (0/2 tests passed)
+------------------------------------------------------------------------
+
+Monthly balance:  χ²=573.34,  p<0.0001  FAILED
+Weekly balance:   χ²=2,004.02, p<0.0001  FAILED
+
+ASSESSMENT: Variants were NOT distributed uniformly over time. Some
+variants were more heavily represented in certain months/weeks than others.
+
+POTENTIAL CAUSES:
+- Sequential rollout: Variants introduced at different times
+- Traffic allocation changes: Variant weights adjusted during experiment
+- Seasonality interaction: Certain variants only shown during specific periods
+
+PRACTICAL IMPACT: HIGH - Temporal trends (e.g., holiday season effects,
+product launch momentum) are confounded with variant effects. Early-deployed
+variants capture different customer behavior than late-deployed variants.
+
+
+================================================================================
+ROOT CAUSE ANALYSIS
+================================================================================
+
+WHAT WENT WRONG?
+
+This is NOT a properly randomized controlled trial. The assignment mechanism
+appears to be:
+
+HYPOTHESIS 1: Pseudo-randomization with drift
+- Assignment uses hashing/modulo based on customer/quote ID
+- Customer characteristics (e.g., existing customers) systematically map
+  to certain hash ranges
+- Premium-based assignment (e.g., high-premium customers → certain variants)
+
+HYPOTHESIS 2: Sequential or adaptive assignment
+- Variants deployed/adjusted over time
+- Traffic allocation shifted based on early performance signals
+- Geographic rollout: Certain states got certain variants first
+
+HYPOTHESIS 3: Unintentional stratification
+- Assignment conditioned on some feature (premium tier, customer type)
+- Stratification was unbalanced or incomplete
+
+EVIDENCE FOR HYPOTHESIS 1 (Most Likely):
+✓ Premium imbalances (6% CV) suggest premium-based assignment
+✓ Existing customer imbalances suggest customer-type clustering
+✓ State imbalances (χ²=2,704) suggest geographic hashing artifacts
+✓ Temporal imbalances suggest gradual deployment
+
+INVESTIGATION NEEDED:
+- Review variant assignment code/logic
+- Check if assignment uses customer features as seeds
+- Verify if traffic allocation changed during experiment
+- Check for geographic or temporal deployment patterns
+
+
+================================================================================
+IMPACT ON PREVIOUS ANALYSIS (STAGES 1-5)
+================================================================================
+
+Stage 2: Variant Performance Analysis
+--------------------------------------
+STATUS: ⚠️  POTENTIALLY BIASED
+
+The variant rankings (e.g., 70_100_50000 as top performer) may be
+confounded by:
+
+1. EXISTING CUSTOMER DISTRIBUTION: If top variants got more existing
+   customers (60% conversion) vs bottom variants got fewer (14% conversion),
+   rankings are biased.
+
+2. INCOME DISTRIBUTION: High-income customers convert 1.6× better. If
+   high-income customers cluster in certain variants, rankings are biased.
+
+3. TEMPORAL EFFECTS: Variants deployed early vs late capture different
+   customer behavior patterns.
+
+RECOMMENDATION: Re-run Stage 2 with covariate adjustment:
+- Control for HAS_MULTIPLE_PET_DISCOUNT, HAS_DEBIT_CARD, HAS_STRONGLY_CONNECTED_USERS
+- Control for MEDIAN_HOUSEHOLD_INCOME_2020, IMPUTED_AGE
+- Control for STATE (or use random effects)
+- Control for temporal trends (month fixed effects)
+
+
+Stage 3-4: Feature Analysis and Engineering
+--------------------------------------------
+STATUS: ✓ MOSTLY VALID
+
+Feature importance analysis is LESS affected because it examines feature-
+outcome relationships, not treatment effects. However:
+
+⚠️  CAUTION: Some engineered features (e.g., variant quality tiers) may
+conflate treatment effects with customer composition.
+
+
+Stage 5: Modeling Recommendations
+----------------------------------
+STATUS: ⚠️  REQUIRES MODIFICATION
+
+Recommendation system needs adjustment:
+
+BEFORE: Predict optimal variant for customer
+AFTER:
+  1. Predict customer conversion propensity (baseline model)
+  2. Estimate treatment effects adjusting for observed covariates
+  3. Recommend variant based on adjusted lift estimates
+
+KEY DIFFERENCE: Need causal inference methods (propensity scores,
+doubly robust estimation) rather than simple predictive modeling.
+
+
+================================================================================
+RECOMMENDATIONS FOR CORRECTIVE ANALYSIS
+================================================================================
+
+IMMEDIATE ACTIONS (This Session):
+---------------------------------
+
+1. ✓ COMPLETED: Document randomization failure
+2. ⚠️  REQUIRED: Re-analyze variant performance with covariate adjustment
+   - Use ANCOVA controlling for all imbalanced features
+   - Or use propensity score matching/weighting
+   - Or build regression model: Sales ~ Variant + Age + Income + ...
+3. ⚠️  REQUIRED: Quantify bias magnitude
+   - Compare adjusted vs unadjusted variant effects
+   - Assess how much rankings change after adjustment
+4. ⚠️  RECOMMENDED: Segment analysis
+   - Analyze variants separately for existing vs new customers
+   - Control for within-segment variation
+
+
+LONGER-TERM ACTIONS (Future Experiments):
+-----------------------------------------
+
+1. Implement true randomization:
+   - Use cryptographically secure random assignment
+   - Do NOT condition assignment on customer features
+   - Verify balance after assignment (pre-launch check)
+
+2. Stratified randomization (if needed):
+   - Stratify by existing customer status (Yes/No)
+   - Stratify by income quartile
+   - Ensure balanced allocation within strata
+
+3. Sequential monitoring:
+   - Check balance weekly during rollout
+   - Flag and investigate imbalances early
+   - Adjust allocation if imbalances detected
+
+4. Sample size planning:
+   - Stage 2 found study was underpowered (need 6,300/variant, have 2,100)
+   - Increase sample sizes to achieve 80% power
+   - Or focus on larger effect sizes (existing customers only)
+
+
+================================================================================
+STATISTICAL METHODS FOR ADJUSTMENT
+================================================================================
+
+Option 1: ANCOVA (Analysis of Covariance)
+------------------------------------------
+Fit model: Sales ~ Variant + Age + Income + PetAge + MultiPet + DebitCard +
+                    ConnectedUsers + State + Month
+
+Advantages:
+  ✓ Simple to implement and interpret
+  ✓ Controls for all observed confounds simultaneously
+  ✓ Provides adjusted treatment effects
+
+Disadvantages:
+  ✗ Assumes linear relationships
+  ✗ Requires sufficient data per variant-covariate combination
+
+
+Option 2: Propensity Score Matching/Weighting
+----------------------------------------------
+1. Estimate propensity scores: P(Variant | Covariates)
+2. Match treated/control units with similar propensity scores
+3. Compare outcomes within matched pairs
+
+Advantages:
+  ✓ Non-parametric (fewer assumptions)
+  ✓ Balances covariates explicitly
+  ✓ Intuitive interpretation
+
+Disadvantages:
+  ✗ Can't match all units (lose sample size)
+  ✗ Sensitive to model specification
+  ✗ Only controls for observed confounds
+
+
+Option 3: Regression with Interaction Terms
+--------------------------------------------
+Fit separate models for different customer segments:
+- Model 1: Existing customers only
+- Model 2: New customers only
+- Then pool estimates with meta-analysis
+
+Advantages:
+  ✓ Allows heterogeneous treatment effects
+  ✓ Interpretable segment-specific recommendations
+
+Disadvantages:
+  ✗ Requires large samples per segment
+  ✗ More complex to implement
+
+
+RECOMMENDED APPROACH: Hybrid
+-----------------------------
+1. Fit ANCOVA model with all covariates (quick, robust)
+2. Validate with propensity score weighting (check robustness)
+3. Segment analysis for existing vs new customers (interpretability)
+4. Compare all three: If consistent → high confidence
+                      If divergent → investigate further
+
+
+================================================================================
+WHAT THIS MEANS FOR THE BUSINESS
+================================================================================
+
+GOOD NEWS:
+----------
+✓ Feature analysis (Stages 3-4) is still valid - we know what drives conversion
+✓ Customer segmentation insights are valid and actionable
+✓ Engineered features (propensity scores, composite scores) are still useful
+✓ Data quality is high (only randomization mechanism is flawed)
+
+BAD NEWS:
+---------
+⚠️  Cannot trust simple variant comparisons without adjustment
+⚠️  Best variant (70_100_50000) may not be truly best - could be confounded
+⚠️  $1.35M revenue lift estimate may be biased (over or under-estimate)
+⚠️  Need more sophisticated analysis before making production decisions
+
+NEUTRAL:
+--------
+• This is fixable with proper statistical adjustment
+• Common issue in real-world A/B tests (not ideal, but manageable)
+• Covariate adjustment is standard practice in observational studies
+• Models will still be valuable for recommendation system
+
+
+REVISED RECOMMENDATION:
+-----------------------
+BEFORE deploying new default variant:
+  1. Complete covariate-adjusted analysis (see recommendations above)
+  2. Validate that top variant still performs best after adjustment
+  3. Quantify adjusted lift estimates (may be higher or lower than unadjusted)
+  4. Build recommendation model with causal adjustment techniques
+
+TIMELINE IMPACT:
+  • Add 1-2 weeks for adjusted analysis
+  • No change to model development timeline
+  • Increases confidence in final recommendations
+
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+PRIORITY 1 (Critical - Do Immediately):
+--------------------------------------
+[ ] Run covariate-adjusted variant analysis
+    - Fit ANCOVA model
+    - Compare adjusted vs unadjusted variant rankings
+    - Quantify bias magnitude
+
+PRIORITY 2 (Important - Do Soon):
+----------------------------------
+[ ] Segment analysis (existing vs new customers)
+[ ] Sensitivity analysis (vary adjustment methods)
+[ ] Update variant ranking and lift estimates
+[ ] Revise Stage 2 results and conclusions
+
+PRIORITY 3 (Recommended - Do Before Production):
+-------------------------------------------------
+[ ] Investigate root cause of imbalanced assignment
+[ ] Validate top variant performance in balanced subsample
+[ ] Design proper randomization for next experiment
+[ ] Document lessons learned for future A/B tests
+
+
+================================================================================
+CONCLUSION
+================================================================================
+
+The pet insurance A/B test suffers from severe randomization failure. Only
+7.7% of balance tests passed, indicating systematic imbalances in customer
+demographics, existing customer indicators, geographic distribution, and
+temporal patterns across treatment variants.
+
+This DOES NOT invalidate the entire analysis - feature importance, customer
+segmentation, and engineered features remain valid. However, simple variant
+comparisons (Stage 2) are potentially biased and should be re-analyzed with
+covariate adjustment methods (ANCOVA, propensity scores, or regression).
+
+The recommendation system can still be built, but should use causal inference
+techniques rather than simple predictive modeling to avoid confounding
+treatment effects with customer composition effects.
+
+With proper adjustment, we can still identify the best-performing variants
+and deliver significant business value. The path forward is clear: covariate-
+adjusted analysis, segmentation, and causal modeling.
+
+================================================================================
+REPORT END
+================================================================================
+
+Generated: 2026-02-26
+Analyst: Agentic Data Scientist
+Contact: For questions about this analysis, review the following files:
+  - results/randomization_quality_summary.json (structured findings)
+  - results/randomization_continuous_balance.csv (detailed test results)
+  - results/randomization_categorical_balance.csv (detailed test results)
+  - figures/randomization_quality_analysis.png (9-panel visualization)

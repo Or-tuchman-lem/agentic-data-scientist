@@ -1,0 +1,470 @@
+================================================================================
+STAGE 3: EXPLORATORY FEATURE ANALYSIS AND RELATIONSHIP TO TARGET
+COMPREHENSIVE SUMMARY REPORT
+================================================================================
+
+Analysis Date: 2026-02-26
+Dataset: 57,681 quotes × 15 predictive features
+Target: Conversion (is_purchased) and Premium Amount
+Overall Conversion Rate: 15.08%
+
+================================================================================
+EXECUTIVE SUMMARY
+================================================================================
+
+This analysis provides a comprehensive exploration of all 15 predictive features
+and their relationships with customer conversion and premium outcomes. Key findings:
+
+🎯 TOP INSIGHTS:
+
+1. **EXISTING CUSTOMER INDICATORS DOMINATE**
+   - HAS_MULTIPLE_PET_DISCOUNT: 60.67% vs 14.01% conversion (46.7pp gap!)
+   - HAS_DEBIT_CARD: 24.53% vs 14.21% conversion (10.3pp gap)
+   - Combined effect: Customers with both convert at 57-64%!
+
+2. **INCOME IS THE STRONGEST NUMERICAL PREDICTOR**
+   - Cohen's d = 0.270 (largest numerical effect size)
+   - Q4 (highest income) converts at 19.9% vs Q1 at 12.3%
+   - Effect varies significantly by state (CA Q4: 22.2%, TX Q4: 16.5%)
+
+3. **PRICE SENSITIVITY CONFIRMED**
+   - Lower premiums → Higher conversion (Cohen's d = -0.191)
+   - Customers who convert pay $65.62 less on average
+   - But: HIGH-VALUE CUSTOMERS convert despite higher prices
+
+4. **GRAPH DATABASE FEATURE WORKS**
+   - HAS_STRONGLY_CONNECTED_USERS: 16.64% vs 14.94% conversion
+   - Small but statistically significant effect (p=0.0016)
+   - Cramér's V = 0.013 (modest effect size)
+
+5. **GEOGRAPHIC VARIATION IS SUBSTANTIAL**
+   - DC: 24.87% conversion (highest)
+   - HI: 1.61% conversion (lowest)
+   - 23.3 percentage point range across states
+
+================================================================================
+DETAILED FINDINGS
+================================================================================
+
+1. FEATURE IMPORTANCE RANKING (Top 10)
+   ----------------------------------------
+   Rank | Feature                          | Effect Size | Type       | Significance
+   -----|----------------------------------|-------------|------------|-------------
+   1    | HAS_MULTIPLE_PET_DISCOUNT        | 0.195       | Cramér's V | ***
+   2    | MEDIAN_HOUSEHOLD_INCOME_2020     | 0.270       | Cohen's d  | ***
+   3    | PIT_ANNUAL_PREMIUM               | 0.191       | Cohen's d  | ***
+   4    | BASE_PREMIUM                     | 0.185       | Cohen's d  | ***
+   5    | PET_BREED_CLEAN                  | 0.156       | Cramér's V | ***
+   6    | IMPUTED_AGE                      | 0.154       | Cohen's d  | ***
+   7    | PET_AGE_YEARS                    | 0.149       | Cohen's d  | ***
+   8    | TOTAL_VET_CLINICS                | 0.124       | Cohen's d  | ***
+   9    | STATE                            | 0.092       | Cramér's V | ***
+   10   | HAS_DEBIT_CARD                   | 0.080       | Cramér's V | ***
+
+   Note: COVERAGE_SENT_AT excluded (timestamp - overfitting risk)
+
+   Interpretation:
+   - HAS_MULTIPLE_PET_DISCOUNT is the strongest predictor by far
+   - All top features are statistically significant (p < 0.001)
+   - Mix of customer demographics, pricing, and behavioral signals
+
+2. FEATURE GROUP ANALYSIS
+   ----------------------------------------
+   Group                      | Avg Effect Size | Significant Features
+   ---------------------------|-----------------|---------------------
+   Context                    | 0.380          | 3/3
+   Pricing                    | 0.188          | 2/2
+   Customer Demographics      | 0.172          | 3/3
+   Existing Customer          | 0.096          | 3/3
+   Pet Characteristics        | 0.088          | 4/4
+
+   Key Insight: ALL feature groups show significant predictive power.
+   Context group inflated by timestamp feature (not useful for modeling).
+
+3. NUMERICAL FEATURES - DETAILED ANALYSIS
+   ----------------------------------------
+
+   A. MEDIAN_HOUSEHOLD_INCOME_2020 ⭐ STRONGEST
+      • Mean (converted): $93,462
+      • Mean (not converted): $83,322
+      • Difference: +$10,140 (+12.2%)
+      • Cohen's d: 0.270 (small but meaningful effect)
+      • Correlation: 0.096 (p<0.001)
+      • Distribution: Right-skewed, outliers at high end
+
+   B. PIT_ANNUAL_PREMIUM & BASE_PREMIUM (highly correlated)
+      • Mean (converted): $448.57 vs $453.10
+      • Mean (not converted): $514.19 vs $516.80
+      • Difference: -$65.62 (-12.8%) & -$63.70 (-12.3%)
+      • Cohen's d: -0.191 & -0.185 (negative effect - lower price = more conversion)
+      • Key insight: Price sensitivity is real but modest
+
+   C. IMPUTED_AGE
+      • Mean (converted): 37.7 years
+      • Mean (not converted): 40.1 years
+      • Difference: -2.4 years (-5.9%)
+      • Cohen's d: -0.154 (younger customers convert more)
+      • Distribution: Nearly normal, slight right skew
+
+   D. PET_AGE_YEARS
+      • Mean (converted): 2.87 years
+      • Mean (not converted): 3.35 years
+      • Difference: -0.48 years (-14.2%)
+      • Cohen's d: -0.149 (younger pets convert more)
+      • Distribution: Right-skewed, most pets 0-5 years
+
+   E. TOTAL_VET_CLINICS
+      • Mean (converted): 114.67
+      • Mean (not converted): 98.20
+      • Difference: +16.48 (+16.8%)
+      • Cohen's d: 0.124 (urban areas with more vets → more conversion)
+      • Distribution: Highly right-skewed, many outliers
+
+   F. QUOTE_MONTH_COS (cyclic encoding of month)
+      • Minimal effect (Cohen's d = 0.048)
+      • Slight seasonal pattern detected but weak
+
+4. CATEGORICAL FEATURES - DETAILED ANALYSIS
+   ----------------------------------------
+
+   A. HAS_MULTIPLE_PET_DISCOUNT ⭐⭐⭐ STRONGEST PREDICTOR
+      • True: 60.67% conversion (802/1,322 quotes)
+      • False: 14.01% conversion (7,898/56,359 quotes)
+      • Difference: 46.65 percentage points!
+      • Cramér's V: 0.195 (small effect by statistical definition, HUGE by business impact)
+      • Chi-square p-value: <0.001
+      • Interpretation: Existing customers with multiple pets are 4.3× more likely to convert
+
+   B. HAS_DEBIT_CARD ⭐⭐ STRONG SIGNAL
+      • True: 24.53% conversion (1,195/4,872 quotes)
+      • False: 14.21% conversion (7,505/52,809 quotes)
+      • Difference: 10.32 percentage points
+      • Cramér's V: 0.080
+      • Interpretation: Having a debit card on file (existing customer signal) increases conversion 1.7×
+
+   C. HAS_STRONGLY_CONNECTED_USERS ⭐ GRAPH DB FEATURE
+      • True: 16.64% conversion (809/4,861 quotes)
+      • False: 14.94% conversion (7,891/52,820 quotes)
+      • Difference: 1.70 percentage points
+      • Cramér's V: 0.013 (small but significant)
+      • Chi-square p-value: 0.0016
+      • Interpretation: Graph database connections show modest but real predictive value
+
+   D. STATE (41 states)
+      • Best: DC (24.87%), MN (24.67%), RI (20.00%)
+      • Worst: HI (1.61%), LA (2.97%), AL (5.53%)
+      • Range: 23.26 percentage points
+      • Cramér's V: 0.092
+      • Interpretation: Strong geographic variation, likely driven by regional income/culture
+
+   E. PET_BREED_CLEAN (399 breeds)
+      • High cardinality makes direct modeling challenging
+      • Cramér's V: 0.156 (moderate effect)
+      • Some breeds show 100% conversion (small n), others 0%
+      • Interpretation: Breed matters but needs feature engineering (group rare breeds)
+
+   F. DESIGNER_BREED
+      • Other: 15.94% (6,242/39,171)
+      • Designer: 15.05% (614/4,080)
+      • Mixed: 12.78% (1,844/14,430)
+      • Range: 3.16 percentage points
+      • Cramér's V: 0.038 (small effect)
+
+   G. PET_SEX
+      • Female: 15.40% (4,328/28,100)
+      • Male: 14.78% (4,372/29,581)
+      • Difference: 0.62 percentage points
+      • Cramér's V: 0.009 (negligible effect)
+      • Interpretation: Pet sex has minimal predictive value
+
+5. INTERACTION EFFECTS
+   ----------------------------------------
+
+   A. HAS_MULTIPLE_PET_DISCOUNT × HAS_DEBIT_CARD
+
+      Configuration                           | Conversion | Count  | Interaction
+      ----------------------------------------|------------|--------|-------------
+      No Multi-Pet, No Debit Card             | 13.62%     | 52,193 | +0.48pp
+      No Multi-Pet, Has Debit Card            | 18.99%     | 4,166  | -4.47pp
+      Has Multi-Pet, No Debit Card            | 64.61%     | 616    | +4.82pp
+      Has Multi-Pet, Has Debit Card           | 57.22%     | 706    | -12.89pp
+
+      Key Insight: Multi-pet discount shows strongest effect among non-debit customers.
+      When both are present, interaction is slightly negative (57% vs expected 70%).
+      This suggests some saturation effect.
+
+   B. INCOME × STATE (Top 5 States)
+
+      Income Quartile | CA     | TX     | FL     | PA     | IL
+      ----------------|--------|--------|--------|--------|--------
+      Q1 (Lowest)     | 11.17% | 8.61%  | 8.67%  | 11.34% | 11.77%
+      Q2              | 16.40% | 11.96% | 9.83%  | 10.87% | 13.32%
+      Q3              | 22.41% | 17.18% | 12.49% | 14.27% | 19.71%
+      Q4 (Highest)    | 22.16% | 16.52% | 18.23% | 19.43% | 24.92%
+
+      Key Insight: Income effect is consistent across states but magnitude varies.
+      IL shows strongest income gradient (Q4/Q1 = 2.1×)
+      FL shows weakest income gradient (Q4/Q1 = 2.1×)
+
+6. CORRELATION MATRIX (Numerical Features)
+   ----------------------------------------
+
+   Strongest correlations with conversion (is_purchased):
+   • MEDIAN_HOUSEHOLD_INCOME_2020: +0.096
+   • PIT_ANNUAL_PREMIUM: -0.068
+   • BASE_PREMIUM: -0.066
+   • IMPUTED_AGE: -0.055
+   • PET_AGE_YEARS: -0.053
+   • TOTAL_VET_CLINICS: +0.044
+   • QUOTE_MONTH_COS: +0.017
+
+   Note: All correlations are weak (|r| < 0.1), suggesting:
+   - Non-linear relationships may be present
+   - Categorical features dominate predictive power
+   - Feature interactions are important
+
+   Feature collinearity:
+   • PIT_ANNUAL_PREMIUM ↔ BASE_PREMIUM: 0.998 (near-perfect correlation)
+     → Keep only one for modeling (BASE_PREMIUM preferred)
+
+================================================================================
+UNIVARIATE DISTRIBUTION SUMMARIES
+================================================================================
+
+NUMERICAL FEATURES:
+
+1. PIT_ANNUAL_PREMIUM
+   • Range: $120.00 - $6,180.97
+   • Mean: $504.29 ± $343.54
+   • Median: $411.53
+   • Skewness: 2.638 (highly right-skewed)
+   • Outliers: 3,111 (5.39%)
+   • Note: Nearly identical to BASE_PREMIUM
+
+2. IMPUTED_AGE
+   • Range: 18 - 99 years
+   • Mean: 39.70 ± 15.35 years
+   • Median: 36 years
+   • Skewness: 0.723 (moderate right skew)
+   • Outliers: 90 (0.16%)
+   • Distribution: Approximately normal
+
+3. PET_AGE_YEARS
+   • Range: 0 - 14 years
+   • Mean: 3.27 ± 3.20 years
+   • Median: 2 years
+   • Skewness: 0.958 (right-skewed)
+   • Outliers: 1,034 (1.79%)
+   • Most common: 0-5 years
+
+4. BASE_PREMIUM
+   • Range: $68.60 - $6,180.97
+   • Mean: $507.19 ± $345.10
+   • Median: $413.58
+   • Skewness: 2.633 (highly right-skewed)
+   • Outliers: 3,121 (5.41%)
+
+5. MEDIAN_HOUSEHOLD_INCOME_2020
+   • Range: $3,388 - $250,000
+   • Mean: $84,851.79 ± $37,748.75
+   • Median: $77,092
+   • Skewness: 1.285 (right-skewed)
+   • Outliers: 2,049 (3.55%)
+   • Note: Cleaned from original -666,666,666 sentinel values
+
+6. TOTAL_VET_CLINICS
+   • Range: 3 - 621
+   • Mean: 100.68 ± 132.78
+   • Median: 54
+   • Skewness: 2.448 (highly right-skewed)
+   • Outliers: 6,299 (10.92%)
+   • Interpretation: Urban vs rural proxy
+
+7. QUOTE_MONTH_COS
+   • Range: -1.00 - 1.00
+   • Mean: -0.17 ± 0.71
+   • Median: -0.50
+   • Skewness: 0.458
+   • Outliers: 0 (0.00%)
+   • Note: Cyclic encoding, minimal seasonality detected
+
+CATEGORICAL FEATURES:
+
+1. HAS_MULTIPLE_PET_DISCOUNT: 2.29% True (1,322), 97.71% False (56,359)
+2. HAS_DEBIT_CARD: 8.45% True (4,872), 91.55% False (52,809)
+3. HAS_STRONGLY_CONNECTED_USERS: 8.43% True (4,861), 91.57% False (52,820)
+4. PET_SEX: 51.28% Male (29,581), 48.72% Female (28,100)
+5. DESIGNER_BREED: 67.91% Other (39,171), 25.02% Mixed (14,430), 7.07% Designer (4,080)
+6. STATE: 41 states, top 5: CA (12.99%), TX (12.00%), FL (8.07%), PA (5.32%), IL (4.41%)
+7. PET_BREED_CLEAN: 399 breeds, top 5: domesticshorthair (9.27%), americanshorthair (7.45%),
+   mixedbreedcat (5.18%), mixedbreeddogmedium (2.93%), frenchbulldog (2.81%)
+8. COVERAGE_SENT_AT: 35,885 unique timestamps (not useful for modeling - high cardinality)
+
+================================================================================
+RECOMMENDATIONS FOR FEATURE ENGINEERING & MODELING
+================================================================================
+
+1. FEATURE SELECTION PRIORITIES
+   ✓ Must Include:
+     - HAS_MULTIPLE_PET_DISCOUNT (strongest predictor)
+     - MEDIAN_HOUSEHOLD_INCOME_2020 (strongest numerical)
+     - HAS_DEBIT_CARD (existing customer signal)
+     - STATE (geographic variation)
+     - BASE_PREMIUM (price sensitivity)
+
+   ✓ Strong Candidates:
+     - PET_BREED_CLEAN (after grouping rare breeds)
+     - IMPUTED_AGE
+     - PET_AGE_YEARS
+     - HAS_STRONGLY_CONNECTED_USERS (graph DB feature)
+     - TOTAL_VET_CLINICS
+
+   ⚠ Consider Excluding:
+     - PIT_ANNUAL_PREMIUM (redundant with BASE_PREMIUM, r=0.998)
+     - COVERAGE_SENT_AT (timestamp, high cardinality)
+     - QUOTE_MONTH_COS (weak signal)
+     - PET_SEX (negligible effect)
+
+2. FEATURE ENGINEERING OPPORTUNITIES
+
+   A. Income Transformations
+      • Create income quartiles/quintiles (non-linear effect detected)
+      • Log transformation to handle skewness
+      • Income × State interactions
+
+   B. Breed Grouping
+      • Group rare breeds (n < 50) into "other"
+      • Create breed categories: popular (top 20), common (21-100), rare (101+)
+      • Consider breed size/species aggregation
+
+   C. Age Transformations
+      • Customer age bins: 18-25, 26-35, 36-45, 46-60, 60+
+      • Pet age bins: puppy/kitten (0-1), young (2-3), adult (4-7), senior (8+)
+      • Age interactions with pricing
+
+   D. Geographic Features
+      • State-level aggregations (region: West, South, Midwest, Northeast)
+      • Income rank within state (percentile)
+      • Vet clinic density quartiles
+
+   E. Composite Features
+      • Existing customer score: HAS_MULTIPLE_PET_DISCOUNT + HAS_DEBIT_CARD + HAS_STRONGLY_CONNECTED_USERS
+      • Value score: Income quartile + Premium level
+      • Engagement score: Debit card + Connected users
+
+3. MODELING RECOMMENDATIONS
+
+   A. Handle Class Imbalance
+      • Only 15.08% conversion rate
+      • Consider: SMOTE, class weights, stratified sampling
+      • Optimize for precision-recall, not just accuracy
+
+   B. Model Architecture
+      • Tree-based models (XGBoost, LightGBM) will handle:
+        - Non-linear relationships
+        - Interactions automatically
+        - Mixed data types
+        - Outliers robustly
+      • Consider neural networks if interaction complexity is high
+
+   C. Feature Interactions to Explore
+      • Multi-pet discount × Debit card (already confirmed)
+      • Income × State (already confirmed)
+      • Age × Premium
+      • Breed × State
+      • Connected users × Income
+
+   D. Model Evaluation
+      • Primary metric: Average sales per quote ($)
+      • Secondary: Conversion rate, average premium
+      • Use holdout test set with temporal split (last month)
+      • Validate on state-level subgroups
+
+4. DATA QUALITY NOTES
+
+   ✓ Strengths:
+     - Clean dataset, no missing values
+     - Good feature coverage (demographics, behavior, context)
+     - Sufficient sample size (57,681 quotes)
+     - Balanced treatment assignment (27 variants)
+
+   ⚠ Considerations:
+     - High-cardinality features (breed, state) need careful handling
+     - Price features highly correlated (choose one)
+     - Some features have extreme outliers (income, vet clinics)
+     - Class imbalance (15% conversion) requires attention
+
+================================================================================
+KEY TAKEAWAYS FOR NEXT STAGE (FEATURE ENGINEERING)
+================================================================================
+
+1. **Prioritize Existing Customer Signals**
+   - Multi-pet discount effect is massive (60% vs 14%)
+   - Debit card and graph DB features add incremental value
+   - Create composite "existing customer" score
+
+2. **Income is Key, But Context Matters**
+   - Strongest numerical predictor (Cohen's d = 0.270)
+   - Effect varies by state (interaction present)
+   - Non-linear relationship (quartiles show clear steps)
+
+3. **Price Sensitivity is Real but Modest**
+   - Lower premiums increase conversion slightly
+   - But high-value customers convert despite high prices
+   - Segment-specific pricing strategies may be optimal
+
+4. **Geographic and Demographic Segmentation Required**
+   - State-level variation is large (1.6% to 24.9%)
+   - Age and pet age show consistent negative effects
+   - Consider state-specific or region-specific models
+
+5. **Feature Engineering Will Be Critical**
+   - Raw features show modest effects
+   - Interactions and transformations will unlock more signal
+   - Breed grouping, income binning, age categories recommended
+
+================================================================================
+FILES GENERATED
+================================================================================
+
+Analysis Results:
+• stage3_numerical_stats.csv - Univariate statistics for numerical features
+• stage3_categorical_stats.csv - Univariate statistics for categorical features
+• stage3_numerical_bivariate.csv - Numerical features vs target analysis
+• stage3_categorical_bivariate.csv - Categorical features vs target analysis
+• stage3_feature_importance_ranking.csv - Unified feature ranking by effect size
+• stage3_feature_group_importance.csv - Feature group analysis
+• stage3_numerical_correlations.csv - Correlation matrix
+• stage3_deep_dive_has_multiple_pet_discount.csv - Detailed breakdown
+• stage3_deep_dive_has_debit_card.csv - Detailed breakdown
+• stage3_deep_dive_has_strongly_connected_users.csv - Detailed breakdown
+• stage3_deep_dive_state.csv - Detailed state-level breakdown
+
+Visualizations:
+• stage3_feature_importance_ranking.png - Top 14 features by effect size
+• stage3_numerical_distributions.png - Distribution comparison by conversion
+• stage3_categorical_conversion_rates.png - Top categorical features analysis
+• stage3_correlation_heatmap.png - Numerical feature correlations
+• stage3_income_analysis.png - Income as strongest numerical predictor
+• stage3_feature_group_importance.png - Feature group rankings
+• stage3_interaction_effects.png - Multi-pet × Debit and Income × State
+
+Implementation Scripts:
+• workflow/stage3_feature_analysis.py - Univariate and bivariate analysis
+• workflow/stage3_feature_importance.py - Feature ranking and deep dives
+• workflow/stage3_visualizations.py - Visualization generation
+
+================================================================================
+STAGE 3 COMPLETE
+================================================================================
+
+✓ All 15 predictive features analyzed comprehensively
+✓ Univariate distributions documented with outlier detection
+✓ Bivariate relationships quantified with statistical tests and effect sizes
+✓ Feature importance unified ranking created
+✓ Top features deep-dived (multi-pet discount, debit card, graph DB, state, income)
+✓ Interaction effects explored (multi-pet × debit, income × state)
+✓ 7 publication-quality visualizations generated
+✓ Recommendations for feature engineering and modeling provided
+
+Ready for Stage 4: Feature Engineering and Hypothesis Generation

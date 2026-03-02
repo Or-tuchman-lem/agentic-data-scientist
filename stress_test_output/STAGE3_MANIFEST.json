@@ -1,0 +1,321 @@
+{
+  "stage": 3,
+  "title": "Exploratory Feature Analysis and Relationship to Target",
+  "status": "COMPLETE",
+  "completion_date": "2026-02-26",
+  "summary": "Comprehensive univariate and bivariate analysis of all 15 predictive features with statistical tests, effect sizes, feature importance ranking, correlation analysis, and interaction effects exploration.",
+
+  "deliverables": {
+    "reports": [
+      {
+        "file": "results/STAGE3_SUMMARY.txt",
+        "description": "Comprehensive 400+ line analysis report covering all findings, recommendations, and detailed breakdowns",
+        "size": "~50KB",
+        "highlights": [
+          "Executive summary with top insights",
+          "Detailed feature importance rankings",
+          "Feature group analysis",
+          "Univariate distribution summaries",
+          "Bivariate relationship analysis",
+          "Interaction effects",
+          "Recommendations for feature engineering and modeling"
+        ]
+      }
+    ],
+
+    "analysis_results": [
+      {
+        "file": "results/stage3_feature_importance_ranking.csv",
+        "description": "Unified feature ranking of all 15 features by effect size (Cohen's d or Cramér's V)",
+        "rows": 15,
+        "key_columns": ["feature", "type", "effect_size", "effect_size_metric", "p_value", "significant", "rank", "importance_category"]
+      },
+      {
+        "file": "results/stage3_numerical_stats.csv",
+        "description": "Univariate statistics for 7 numerical features",
+        "rows": 7,
+        "key_columns": ["feature", "mean", "std", "median", "skewness", "kurtosis", "outliers_n", "outliers_pct"]
+      },
+      {
+        "file": "results/stage3_categorical_stats.csv",
+        "description": "Univariate statistics for 8 categorical/boolean features",
+        "rows": 8,
+        "key_columns": ["feature", "type", "n_unique", "top_value", "top_pct", "true_count", "true_pct"]
+      },
+      {
+        "file": "results/stage3_numerical_bivariate.csv",
+        "description": "Bivariate analysis of numerical features vs conversion target with statistical tests",
+        "rows": 7,
+        "key_columns": ["feature", "mean_converted", "mean_not_converted", "mean_diff_pct", "t_pvalue", "cohens_d", "correlation"]
+      },
+      {
+        "file": "results/stage3_categorical_bivariate.csv",
+        "description": "Bivariate analysis of categorical features vs conversion target with chi-square tests",
+        "rows": 8,
+        "key_columns": ["feature", "n_categories", "chi2_pvalue", "cramers_v", "best_category", "best_conversion_rate", "range_pct"]
+      },
+      {
+        "file": "results/stage3_numerical_correlations.csv",
+        "description": "Full correlation matrix for numerical features including target variable",
+        "rows": 8,
+        "cols": 8,
+        "note": "Detected multicollinearity: PIT_ANNUAL_PREMIUM ↔ BASE_PREMIUM (r=0.998)"
+      },
+      {
+        "file": "results/stage3_feature_group_importance.csv",
+        "description": "Feature group analysis showing average effect size by category",
+        "rows": 5,
+        "groups": ["context", "pricing", "customer_demographics", "existing_customer", "pet_characteristics"]
+      }
+    ],
+
+    "deep_dives": [
+      {
+        "file": "results/stage3_deep_dive_has_multiple_pet_discount.csv",
+        "description": "Detailed breakdown: Multi-pet discount (strongest predictor, 60.67% vs 14.01%)"
+      },
+      {
+        "file": "results/stage3_deep_dive_has_debit_card.csv",
+        "description": "Detailed breakdown: Debit card on file (existing customer signal, 24.53% vs 14.21%)"
+      },
+      {
+        "file": "results/stage3_deep_dive_has_strongly_connected_users.csv",
+        "description": "Detailed breakdown: Graph DB feature (16.64% vs 14.94%, p=0.0016)"
+      },
+      {
+        "file": "results/stage3_deep_dive_state.csv",
+        "description": "Detailed breakdown: All 41 states with conversion rates and volumes"
+      }
+    ],
+
+    "visualizations": [
+      {
+        "file": "figures/stage3_feature_importance_ranking.png",
+        "description": "Horizontal bar chart of top 14 features by effect size (excluding timestamp)",
+        "type": "feature_ranking",
+        "insights": ["Multi-pet discount and income lead", "Mix of numerical and categorical predictors"]
+      },
+      {
+        "file": "figures/stage3_numerical_distributions.png",
+        "description": "9-panel violin plot comparing numerical feature distributions by conversion status",
+        "type": "distribution_comparison",
+        "insights": ["Income higher for converters", "Premiums lower for converters", "Age younger for converters"]
+      },
+      {
+        "file": "figures/stage3_categorical_conversion_rates.png",
+        "description": "4-panel analysis of top categorical features (multi-pet, debit, graph DB, state)",
+        "type": "categorical_analysis",
+        "insights": ["Multi-pet discount shows 4.3× conversion multiplier", "Debit card 1.7× multiplier", "DC leads states at 24.87%"]
+      },
+      {
+        "file": "figures/stage3_correlation_heatmap.png",
+        "description": "Correlation heatmap for numerical features including target variable",
+        "type": "correlation_matrix",
+        "insights": ["Weak correlations overall (|r| < 0.1)", "PIT_ANNUAL_PREMIUM ↔ BASE_PREMIUM multicollinearity detected"]
+      },
+      {
+        "file": "figures/stage3_income_analysis.png",
+        "description": "2-panel income analysis: distribution comparison and quartile conversion rates",
+        "type": "deep_dive",
+        "insights": ["Income shows strongest numerical effect", "Non-linear quartile pattern", "Q4 converts at 19.9% vs Q1 at 12.3%"]
+      },
+      {
+        "file": "figures/stage3_feature_group_importance.png",
+        "description": "Horizontal bar chart of feature group importance by average effect size",
+        "type": "group_analysis",
+        "insights": ["Existing customer signals most important", "All groups show significant effects"]
+      },
+      {
+        "file": "figures/stage3_interaction_effects.png",
+        "description": "2-panel interaction analysis: Multi-pet × Debit and Income × State",
+        "type": "interaction_analysis",
+        "insights": ["Multi-pet + Debit = 57-64% conversion", "Income effect 2× stronger in IL vs FL"]
+      }
+    ],
+
+    "implementation_scripts": [
+      {
+        "file": "workflow/stage3_feature_analysis.py",
+        "description": "Part 1: Univariate and bivariate analysis with statistical tests",
+        "size": "14KB",
+        "key_functions": [
+          "Load data and categorize features",
+          "Univariate statistics (numerical and categorical)",
+          "Bivariate analysis with t-tests, chi-square, effect sizes",
+          "Generate CSV results"
+        ]
+      },
+      {
+        "file": "workflow/stage3_feature_importance.py",
+        "description": "Part 2: Feature importance ranking, group analysis, and deep dives",
+        "size": "11KB",
+        "key_functions": [
+          "Unified feature importance ranking",
+          "Feature group aggregation",
+          "Deep dives into top categorical features",
+          "Correlation matrix analysis",
+          "Interaction effects exploration"
+        ]
+      },
+      {
+        "file": "workflow/stage3_visualizations.py",
+        "description": "Part 3: Comprehensive visualization generation (7 figures)",
+        "size": "16KB",
+        "key_functions": [
+          "Feature importance ranking chart",
+          "Numerical distribution violin plots",
+          "Categorical conversion rate bar charts",
+          "Correlation heatmap",
+          "Income deep dive analysis",
+          "Feature group importance chart",
+          "Interaction effects plots"
+        ]
+      }
+    ]
+  },
+
+  "key_findings": {
+    "top_predictors": [
+      {
+        "feature": "HAS_MULTIPLE_PET_DISCOUNT",
+        "effect": "Cramér's V = 0.195",
+        "impact": "60.67% vs 14.01% conversion (46.7pp gap)",
+        "interpretation": "Strongest predictor - existing customers with multiple pets are 4.3× more likely to convert"
+      },
+      {
+        "feature": "MEDIAN_HOUSEHOLD_INCOME_2020",
+        "effect": "Cohen's d = 0.270",
+        "impact": "Q4 converts at 19.9% vs Q1 at 12.3%",
+        "interpretation": "Strongest numerical predictor - high-income customers significantly more likely to convert"
+      },
+      {
+        "feature": "HAS_DEBIT_CARD",
+        "effect": "Cramér's V = 0.080",
+        "impact": "24.53% vs 14.21% conversion (10.3pp gap)",
+        "interpretation": "Existing customer signal - having payment method on file increases conversion 1.7×"
+      },
+      {
+        "feature": "BASE_PREMIUM",
+        "effect": "Cohen's d = -0.185",
+        "impact": "Converters pay $63.70 less (-12.3%)",
+        "interpretation": "Price sensitivity confirmed but modest - lower premiums increase conversion"
+      },
+      {
+        "feature": "STATE",
+        "effect": "Cramér's V = 0.092",
+        "impact": "DC (24.87%) to HI (1.61%) - 23.3pp range",
+        "interpretation": "Substantial geographic variation driven by regional income and culture"
+      }
+    ],
+
+    "interaction_effects": [
+      {
+        "features": "HAS_MULTIPLE_PET_DISCOUNT × HAS_DEBIT_CARD",
+        "finding": "Combined conversion rate: 57-64%",
+        "interpretation": "Strong positive interaction - both signals together yield very high conversion"
+      },
+      {
+        "features": "MEDIAN_HOUSEHOLD_INCOME_2020 × STATE",
+        "finding": "Income effect varies 2× by state (IL strongest, FL weakest)",
+        "interpretation": "Income impact is state-dependent - suggests need for regional models"
+      }
+    ],
+
+    "graph_db_validation": {
+      "feature": "HAS_STRONGLY_CONNECTED_USERS",
+      "effect": "16.64% vs 14.94% conversion",
+      "significance": "p = 0.0016",
+      "interpretation": "Graph database feature shows modest but statistically significant predictive value"
+    },
+
+    "multicollinearity": {
+      "features": "PIT_ANNUAL_PREMIUM ↔ BASE_PREMIUM",
+      "correlation": 0.998,
+      "recommendation": "Keep only BASE_PREMIUM for modeling to avoid multicollinearity"
+    }
+  },
+
+  "recommendations": {
+    "feature_selection": {
+      "must_include": [
+        "HAS_MULTIPLE_PET_DISCOUNT",
+        "MEDIAN_HOUSEHOLD_INCOME_2020",
+        "HAS_DEBIT_CARD",
+        "STATE",
+        "BASE_PREMIUM"
+      ],
+      "strong_candidates": [
+        "PET_BREED_CLEAN (after grouping)",
+        "IMPUTED_AGE",
+        "PET_AGE_YEARS",
+        "HAS_STRONGLY_CONNECTED_USERS",
+        "TOTAL_VET_CLINICS"
+      ],
+      "consider_excluding": [
+        "PIT_ANNUAL_PREMIUM (redundant with BASE_PREMIUM)",
+        "COVERAGE_SENT_AT (timestamp, high cardinality)",
+        "QUOTE_MONTH_COS (weak signal)",
+        "PET_SEX (negligible effect)"
+      ]
+    },
+
+    "feature_engineering": [
+      "Income quartiles/quintiles (non-linear effect detected)",
+      "Breed grouping (group rare breeds, reduce 399 to ~50 categories)",
+      "Age binning (customer: 18-25, 26-35, 36-45, 46-60, 60+; pet: 0-1, 2-3, 4-7, 8+)",
+      "Geographic aggregation (state → region)",
+      "Composite scores (existing customer score, value score, engagement score)",
+      "Income × State interactions",
+      "Multi-pet × Debit interactions"
+    ],
+
+    "modeling_approach": [
+      "Handle class imbalance (15% conversion rate) - use SMOTE, class weights, or stratified sampling",
+      "Use tree-based models (XGBoost, LightGBM) to handle non-linear relationships and interactions",
+      "Consider state-specific or region-specific models given geographic variation",
+      "Optimize for average sales per quote ($) not just conversion rate",
+      "Use temporal split for validation (last month holdout)",
+      "Validate performance on state-level subgroups"
+    ]
+  },
+
+  "statistical_tests_performed": [
+    "Independent t-tests (numerical vs binary target)",
+    "Mann-Whitney U tests (non-parametric alternative)",
+    "Chi-square tests of independence (categorical vs binary target)",
+    "Point-biserial correlation (continuous vs binary)",
+    "Pearson correlation (continuous vs continuous)",
+    "Cohen's d effect sizes (numerical features)",
+    "Cramér's V effect sizes (categorical features)",
+    "IQR outlier detection",
+    "Bonferroni correction applied where appropriate"
+  ],
+
+  "data_quality": {
+    "sample_size": "57,681 quotes (sufficient for robust analysis)",
+    "features_analyzed": 15,
+    "all_significant": true,
+    "no_missing_values": true,
+    "multicollinearity_detected": "PIT_ANNUAL_PREMIUM ↔ BASE_PREMIUM (r=0.998)",
+    "outliers_handled": "Documented but retained (real data points)",
+    "class_balance": "15.08% conversion (imbalanced - requires attention in modeling)"
+  },
+
+  "next_stage": {
+    "stage": 4,
+    "title": "Feature Engineering and Hypothesis Generation",
+    "dependencies": [
+      "Feature importance rankings from Stage 3",
+      "Interaction effects identified",
+      "Multicollinearity findings",
+      "Distribution characteristics"
+    ],
+    "tasks": [
+      "Implement recommended feature transformations",
+      "Create composite features and interactions",
+      "Handle high-cardinality categorical variables",
+      "Generate modeling-ready dataset",
+      "Document feature engineering rationale"
+    ]
+  }
+}

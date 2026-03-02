@@ -1,0 +1,5 @@
+recommendation_set,n_features,rationale
+top_10_by_effect_size,10,Top 10 features by Cohen's d effect size
+low_vif_high_effect,3,"Features with VIF<5 and effect size>0.2 (low multicollinearity, strong signal)"
+minimal_redundancy,20,Greedy selection to minimize correlation while maximizing effect size
+composite_only,4,Composite scores only (hand-crafted combinations)

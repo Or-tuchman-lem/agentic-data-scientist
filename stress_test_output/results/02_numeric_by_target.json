@@ -1,0 +1,170 @@
+{
+  "TREATMENT_COINSURANCE": {
+    "purchased": {
+      "mean": 79.73218390804598,
+      "median": 80.0,
+      "std": 8.210894132000416
+    },
+    "not_purchased": {
+      "mean": 79.99367101529164,
+      "median": 80.0,
+      "std": 8.153411205860314
+    },
+    "mean_diff": -0.2614871072456566,
+    "mean_diff_pct": -0.32688474466395046
+  },
+  "TREATMENT_DEDUCTIBLE": {
+    "purchased": {
+      "mean": 287.42528735632186,
+      "median": 250.0,
+      "std": 164.8410934645347
+    },
+    "not_purchased": {
+      "mean": 283.88150507339583,
+      "median": 250.0,
+      "std": 164.4459031052156
+    },
+    "mean_diff": 3.5437822829260313,
+    "mean_diff_pct": 1.248331511420516
+  },
+  "TREATMENT_COVERAGE_LIMIT": {
+    "purchased": {
+      "mean": 26602.298850574713,
+      "median": 20000.0,
+      "std": 16952.43968891358
+    },
+    "not_purchased": {
+      "mean": 26664.829219493273,
+      "median": 20000.0,
+      "std": 16998.886965038375
+    },
+    "mean_diff": -62.53036891856027,
+    "mean_diff_pct": -0.23450504184308654
+  },
+  "PIT_ANNUAL_PREMIUM": {
+    "purchased": {
+      "mean": 448.56686091954026,
+      "median": 384.07,
+      "std": 274.55070798289887
+    },
+    "not_purchased": {
+      "mean": 514.1850991200671,
+      "median": 417.44,
+      "std": 353.48150536788
+    },
+    "mean_diff": -65.61823820052683,
+    "mean_diff_pct": -12.761598559122062
+  },
+  "SALES": {
+    "purchased": {
+      "mean": 617.2799850574713,
+      "median": 543.27,
+      "std": 344.4885744483755
+    },
+    "not_purchased": {
+      "mean": 0.0,
+      "median": 0.0,
+      "std": 0.0
+    },
+    "mean_diff": 617.2799850574713,
+    "mean_diff_pct": Infinity
+  },
+  "IMPUTED_AGE": {
+    "purchased": {
+      "mean": 37.69931034482759,
+      "median": 33.0,
+      "std": 14.5911731237034
+    },
+    "not_purchased": {
+      "mean": 40.05579714583206,
+      "median": 36.0,
+      "std": 15.44952034126041
+    },
+    "mean_diff": -2.356486801004472,
+    "mean_diff_pct": -5.883010622470342
+  },
+  "PET_AGE_YEARS": {
+    "purchased": {
+      "mean": 2.8704597701149424,
+      "median": 2.0,
+      "std": 2.8251536354110427
+    },
+    "not_purchased": {
+      "mean": 3.3465629529817686,
+      "median": 2.0,
+      "std": 3.2540896587853774
+    },
+    "mean_diff": -0.4761031828668263,
+    "mean_diff_pct": -14.22663160848718
+  },
+  "BASE_PREMIUM": {
+    "purchased": {
+      "mean": 453.10024252873563,
+      "median": 386.64,
+      "std": 276.5031711632604
+    },
+    "not_purchased": {
+      "mean": 516.7976372470958,
+      "median": 419.52,
+      "std": 355.05140381548796
+    },
+    "mean_diff": -63.697394718360215,
+    "mean_diff_pct": -12.32540362561771
+  },
+  "MEDIAN_HOUSEHOLD_INCOME_2020": {
+    "purchased": {
+      "mean": -2205647.449137931,
+      "median": 86788.5,
+      "std": 39088208.09230456
+    },
+    "not_purchased": {
+      "mean": -1291528.3961536107,
+      "median": 76284.0,
+      "std": 30245893.69863517
+    },
+    "mean_diff": -914119.0529843206,
+    "mean_diff_pct": 70.77808399000139
+  },
+  "TOTAL_VET_CLINICS": {
+    "purchased": {
+      "mean": 114.67379310344828,
+      "median": 69.0,
+      "std": 138.42548841797645
+    },
+    "not_purchased": {
+      "mean": 98.19801555705274,
+      "median": 54.0,
+      "std": 131.59305756012319
+    },
+    "mean_diff": 16.475777546395534,
+    "mean_diff_pct": 16.778116597298403
+  },
+  "QUOTE_MONTH_COS": {
+    "purchased": {
+      "mean": -0.14424611379310345,
+      "median": -0.5,
+      "std": 0.7322252100277279
+    },
+    "not_purchased": {
+      "mean": -0.17816459218880792,
+      "median": -0.5,
+      "std": 0.7029523946800976
+    },
+    "mean_diff": 0.03391847839570447,
+    "mean_diff_pct": -19.037721232375816
+  },
+  "premium_amount": {
+    "purchased": {
+      "mean": 617.2799850574713,
+      "median": 543.27,
+      "std": 344.4885744483755
+    },
+    "not_purchased": {
+      "mean": 0.0,
+      "median": 0.0,
+      "std": 0.0
+    },
+    "mean_diff": 617.2799850574713,
+    "mean_diff_pct": Infinity
+  }
+}

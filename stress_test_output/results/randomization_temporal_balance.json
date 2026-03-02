@@ -1,0 +1,13 @@
+{
+  "date_min": "2025-05-28",
+  "date_max": "2026-01-08",
+  "duration_days": 225,
+  "n_months": 9,
+  "n_weeks": 30,
+  "monthly_chi2": 573.3401528115062,
+  "monthly_pvalue": 6.41845249149144e-36,
+  "monthly_balanced": false,
+  "weekly_chi2": 2004.0227882770741,
+  "weekly_pvalue": 5.0268084244591966e-114,
+  "weekly_balanced": false
+}

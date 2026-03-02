@@ -1,0 +1,33 @@
+{
+  "overall_score": 7.6923076923076925,
+  "grade": "F - FAILED",
+  "assessment": "Failed randomization. Severe imbalances. Causal inference not valid without adjustment.",
+  "sample_size_balanced": false,
+  "continuous_features": {
+    "n_tested": 5,
+    "n_balanced": 0,
+    "pct_balanced": 0.0
+  },
+  "categorical_features": {
+    "n_tested": 6,
+    "n_balanced": 1,
+    "pct_balanced": 16.666666666666664
+  },
+  "temporal_balance": {
+    "n_tested": 2,
+    "n_balanced": 0,
+    "pct_balanced": 0.0
+  },
+  "imbalanced_features": [
+    "IMPUTED_AGE",
+    "MEDIAN_HOUSEHOLD_INCOME_2020",
+    "PET_AGE_YEARS",
+    "BASE_PREMIUM",
+    "PIT_ANNUAL_PREMIUM",
+    "HAS_MULTIPLE_PET_DISCOUNT",
+    "HAS_DEBIT_CARD",
+    "HAS_STRONGLY_CONNECTED_USERS",
+    "STATE",
+    "DESIGNER_BREED"
+  ]
+}

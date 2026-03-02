@@ -1,0 +1,148 @@
+STAGE 2: TARGET METRIC AND VARIANT PERFORMANCE ANALYSIS
+Execution Log - 2026-02-26
+================================================================
+
+OBJECTIVE:
+Analyze the performance of 27 insurance parameter variants by calculating
+the primary success metric "average sales per quote" with statistical rigor,
+comparing all variants to each other and to production, and identifying which
+combinations are most effective.
+
+SCOPE COMPLETED:
+================================================================
+
+✓ STEP 1: Data Loading & Verification
+  - Loaded 57,681 quotes with necessary columns (COVERAGE_TREATMENT, CONVERTED, SALES, BASE_PREMIUM)
+  - Verified SALES column represents actual final premium (not theoretical)
+  - Managed memory efficiently (4.68 MB)
+
+✓ STEP 2: Target Metric Calculation with Bootstrap CIs
+  - Calculated avg sales/quote for all 27 variants
+  - Generated 10,000 bootstrap samples per variant for 95% confidence intervals
+  - Identified top performer: 70_100_50000 ($111.90/quote)
+  - Ranked all variants (production ranks 9/27)
+
+✓ STEP 3: Statistical Comparison to Production
+  - Performed two-sample bootstrap tests (5,000 iterations each)
+  - Applied Bonferroni correction (α=0.0019) for multiple testing
+  - Found: No variants statistically significant at α=0.05
+  - Investigated why: High variance + small sample sizes
+
+✓ STEP 4: Parameter Effects Analysis
+  - Aggregated performance by coinsurance, deductible, coverage limit
+  - Kruskal-Wallis H-tests for parameter significance
+  - Key finding: Coinsurance significantly affects sales (p=0.0056)
+
+✓ STEP 5: Comprehensive Visualizations
+  - Variant ranking with error bars (27 variants)
+  - Parameter main effects (3 bar charts)
+  - Conversion vs sales scatter plot
+  - Parameter interaction heatmaps (3 heatmaps)
+
+✓ STEP 6: Deep Dive Investigation
+  - Power analysis: Explained lack of statistical significance
+  - Decomposed sales into conversion × premium
+  - Segment analysis: Pet age, income level
+  - Temporal stability: 9 months of data
+  - Additional visualizations: distributions, segments
+
+✓ STEP 7: Documentation
+  - Technical summary report (STAGE2_SUMMARY.txt)
+  - Executive insights document (STAGE2_KEY_INSIGHTS.md)
+  - Complete manifest (STAGE2_MANIFEST.json)
+  - Updated README.md
+  - Execution log (this file)
+
+DELIVERABLES:
+================================================================
+Data Files (2):
+  - stage2_variant_performance_detailed.csv (27 rows × 13 metrics)
+  - stage2_production_comparison.csv (26 comparisons)
+
+Visualizations (5):
+  - stage2_variant_ranking_ci.png (rankings with CIs)
+  - stage2_parameter_effects.png (main effects)
+  - stage2_conversion_vs_sales.png (trade-off analysis)
+  - stage2_parameter_heatmaps.png (interactions)
+  - stage2_deep_dive_analysis.png (segments & distributions)
+
+Reports (4):
+  - STAGE2_SUMMARY.txt (technical report, 4.2K)
+  - STAGE2_KEY_INSIGHTS.md (executive summary, 7.5K)
+  - STAGE2_MANIFEST.json (metadata, 3.2K)
+  - STAGE2_EXECUTION_LOG.txt (this file)
+
+Scripts (2):
+  - stage2_target_metric_analysis.py (main analysis, 22K)
+  - stage2_deep_dive.py (additional investigations, 14K)
+
+KEY DISCOVERIES:
+================================================================
+
+1. BUSINESS OPPORTUNITY:
+   Best variant (70_100_50000) shows 13.74% improvement over production
+   = $1.35M annual revenue impact (100k quotes/year assumption)
+
+2. STATISTICAL REALITY:
+   Despite meaningful business impact, no traditional statistical significance
+   due to study being underpowered (need 6,300/variant, have 2,100/variant)
+
+3. PARAMETER INSIGHTS:
+   - Coinsurance: 70% significantly outperforms 80%/90% (p=0.0056)
+   - Deductible: $250 slight edge but not significant
+   - Coverage: $20k performs best but not significant
+
+4. SEGMENT OPPORTUNITIES:
+   - High income: +35.5% potential improvement
+   - Senior pets: Production severely underperforms (0.71% conv)
+   - Adult pets: Highest sales potential overall
+
+5. TEMPORAL STABILITY:
+   Top variants maintain rankings across 9 months (72% stability)
+
+STATISTICAL METHODS:
+================================================================
+- Bootstrap resampling (10,000 iterations for CIs, 5,000 for tests)
+- Two-sample bootstrap hypothesis tests
+- Bonferroni correction for multiple testing
+- Kruskal-Wallis H-test for parameter effects
+- Cohen's d for effect size calculation
+- Statistical power analysis
+- Coefficient of variation analysis
+- Segment stratification analysis
+
+SKILLS UTILIZED:
+================================================================
+- statistical-analysis: Guided test selection and interpretation
+- scipy.stats: Bootstrap, non-parametric tests, power analysis
+- seaborn/matplotlib: Statistical visualizations
+- pandas/numpy: Data manipulation and aggregation
+
+QUALITY ASSURANCE:
+================================================================
+✓ Reproducibility: Random seed 42
+✓ Confidence intervals: 95% for all estimates
+✓ Multiple testing correction: Bonferroni applied
+✓ Segment robustness: Verified across pet age and income
+✓ Temporal stability: Checked across 9 months
+✓ Sample size adequacy: Assessed via power analysis
+
+RECOMMENDATIONS FOR NEXT STAGES:
+================================================================
+
+Stage 3 (Feature Engineering):
+- Include variant parameters as interaction features
+- Create customer segment features (high_value, senior_pet)
+- Premium-to-income ratio
+- Temporal/seasonal features
+
+Stage 4-5 (Modeling):
+- Focus on top 7-10 variants for recommendations
+- Personalized by customer segment
+- Two-stage model: P(convert) × E[premium|convert]
+- Optimize for expected value, not just conversion
+
+STAGE 2 STATUS: ✓✓✓ COMPLETE
+================================================================
+All objectives achieved. All deliverables generated. Ready for Stage 3.
+

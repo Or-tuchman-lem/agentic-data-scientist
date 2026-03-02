@@ -1,0 +1,35 @@
+{
+  "generated_at": "2026-02-26 12:48:15",
+  "data_quality": {
+    "total_rows": 57681,
+    "total_features": 96,
+    "original_features": 23,
+    "engineered_features": 73,
+    "date_range": "May 2025 - Feb 2026",
+    "conversion_rate": "15.1%",
+    "avg_sales_per_quote": "$93.10"
+  },
+  "variant_performance": {
+    "n_variants": 27,
+    "best_variant": "70_100_50000",
+    "best_sales": "$111.90",
+    "worst_variant": "90_100_20000",
+    "worst_sales": "$73.37",
+    "production_variant": "80_250_20000",
+    "production_sales": "$98.39",
+    "potential_lift": "13.7%"
+  },
+  "feature_analysis": {
+    "top_original_feature": "COVERAGE_SENT_AT",
+    "top_original_effect": "0.967",
+    "top_engineered_feature": "PROPENSITY_SCORE",
+    "top_engineered_effect": "0.522",
+    "n_significant_features": 66,
+    "feature_success_rate": "75.9%"
+  },
+  "collinearity": {
+    "high_corr_pairs": 77,
+    "high_vif_features": 11,
+    "recommended_feature_sets": 6
+  }
+}

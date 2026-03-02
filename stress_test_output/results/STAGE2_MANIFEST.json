@@ -1,0 +1,85 @@
+{
+  "stage": "Stage 2: Target Metric and Variant Performance Analysis",
+  "status": "COMPLETE",
+  "date_completed": "2026-02-26",
+  "analysis_type": "Statistical variant comparison with bootstrap confidence intervals",
+  "sample_size": {
+    "total_quotes": 57681,
+    "variants": 27,
+    "avg_per_variant": 2136
+  },
+  "key_metrics": {
+    "primary_metric": "Average sales per quote ($/quote)",
+    "best_variant": "70_100_50000",
+    "best_performance": 111.90,
+    "production_variant": "80_250_20000", 
+    "production_performance": 98.39,
+    "improvement_opportunity_pct": 13.74,
+    "improvement_opportunity_dollars": 13.52,
+    "estimated_annual_impact": 1351867
+  },
+  "statistical_methods": [
+    "Bootstrap resampling (10,000 iterations) for confidence intervals",
+    "Two-sample bootstrap tests for variant comparisons",
+    "Bonferroni correction for multiple testing (α=0.0019)",
+    "Kruskal-Wallis H-test for parameter effects",
+    "Cohen's d for effect size calculation",
+    "Statistical power analysis"
+  ],
+  "key_findings": {
+    "statistical_significance": "None at α=0.05 (study underpowered)",
+    "business_significance": "Very high - 13.7% lift worth $1.35M annually",
+    "coinsurance_effect": "Significant (p=0.0056) - 70% outperforms 80%/90%",
+    "deductible_effect": "Not significant (p=0.87)",
+    "coverage_limit_effect": "Not significant (p=0.69)",
+    "high_variance_explanation": "CV=2.5-2.7 due to binary outcome (many $0, some high values)",
+    "power_analysis": "Need ~6,300 quotes/variant for 80% power, have ~2,100"
+  },
+  "segment_insights": {
+    "high_income_lift": "+35.5% with best variant",
+    "low_income_lift": "+7.4% with best variant",
+    "adult_pets_best": "Highest sales potential segment",
+    "senior_pets_challenging": "Production severely underperforms (0.71% conv)"
+  },
+  "outputs": {
+    "data_files": [
+      "results/stage2_variant_performance_detailed.csv",
+      "results/stage2_production_comparison.csv"
+    ],
+    "visualizations": [
+      "figures/stage2_variant_ranking_ci.png",
+      "figures/stage2_parameter_effects.png",
+      "figures/stage2_conversion_vs_sales.png",
+      "figures/stage2_parameter_heatmaps.png",
+      "figures/stage2_deep_dive_analysis.png"
+    ],
+    "reports": [
+      "results/STAGE2_SUMMARY.txt",
+      "results/STAGE2_KEY_INSIGHTS.md",
+      "results/STAGE2_MANIFEST.json"
+    ],
+    "scripts": [
+      "workflow/stage2_target_metric_analysis.py",
+      "workflow/stage2_deep_dive.py"
+    ]
+  },
+  "recommendations": {
+    "immediate_actions": [
+      "A/B test: High-income customers get 70_100_50000 default",
+      "Implement segment-based variant recommendations",
+      "Special handling for senior pets (8+ years)"
+    ],
+    "modeling_phase": [
+      "Focus on top 7-10 variants for recommendation system",
+      "Include variant parameters as interaction features",
+      "Create customer segment features (high_value, senior_pet)",
+      "Two-stage model: P(convert) × E[premium|convert]"
+    ]
+  },
+  "quality_assurance": {
+    "temporal_stability": "Verified across 9 months",
+    "segment_robustness": "Analyzed across pet age and income",
+    "confidence_intervals": "95% bootstrap CIs for all estimates",
+    "reproducibility": "Random seed 42, all code in workflow/"
+  }
+}

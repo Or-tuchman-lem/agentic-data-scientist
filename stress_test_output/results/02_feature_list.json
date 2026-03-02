@@ -1,0 +1,44 @@
+{
+  "total_features": 23,
+  "target_variables": [
+    "is_purchased",
+    "premium_amount",
+    "CONVERTED",
+    "SALES"
+  ],
+  "treatment_features": [
+    "COVERAGE_TREATMENT",
+    "TREATMENT_COINSURANCE",
+    "TREATMENT_DEDUCTIBLE",
+    "TREATMENT_COVERAGE_LIMIT"
+  ],
+  "predictive_features": [
+    "COVERAGE_SENT_AT",
+    "PIT_ANNUAL_PREMIUM",
+    "STATE",
+    "IMPUTED_AGE",
+    "HAS_MULTIPLE_PET_DISCOUNT",
+    "PET_BREED_CLEAN",
+    "PET_AGE_YEARS",
+    "DESIGNER_BREED",
+    "HAS_STRONGLY_CONNECTED_USERS",
+    "BASE_PREMIUM",
+    "MEDIAN_HOUSEHOLD_INCOME_2020",
+    "TOTAL_VET_CLINICS",
+    "QUOTE_MONTH_COS",
+    "HAS_DEBIT_CARD",
+    "PET_SEX"
+  ],
+  "excluded_features": [
+    "ENCRYPTED_USER_ID",
+    "QUOTE_ID",
+    "ENCRYPTED_QUOTE_ID",
+    "PET_LAST_NAME",
+    "EMAIL_END",
+    "FINAL_COINSURANCE_PERCENT",
+    "FINAL_BASE_DEDUCTIBLE",
+    "FINAL_COVERAGE_LIMIT",
+    "FINAL_ANNUAL_PREMIUM",
+    "variant_check"
+  ]
+}

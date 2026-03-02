@@ -1,0 +1,54 @@
+{
+  "total_rows": 57681,
+  "total_columns": 35,
+  "missing_values": [
+    {
+      "Column": "SOURCE",
+      "Missing_Count": 57484,
+      "Missing_Percent": 99.66
+    },
+    {
+      "Column": "TOTAL_VET_CLINICS",
+      "Missing_Count": 3982,
+      "Missing_Percent": 6.9
+    },
+    {
+      "Column": "MEDIAN_HOUSEHOLD_INCOME_2020",
+      "Missing_Count": 1788,
+      "Missing_Percent": 3.1
+    },
+    {
+      "Column": "IMPUTED_AGE",
+      "Missing_Count": 632,
+      "Missing_Percent": 1.1
+    },
+    {
+      "Column": "STATE.1",
+      "Missing_Count": 1,
+      "Missing_Percent": 0.0
+    }
+  ],
+  "duplicate_rows": 0,
+  "duplicate_columns": [],
+  "conversion_rate": 15.082956259426847,
+  "treatment_variants": {
+    "expected": 27,
+    "actual": 27,
+    "missing": [],
+    "extra": []
+  },
+  "feature_categories": {
+    "forward_looking": [
+      "FINAL_COINSURANCE_PERCENT",
+      "FINAL_BASE_DEDUCTIBLE",
+      "FINAL_COVERAGE_LIMIT",
+      "FINAL_ANNUAL_PREMIUM"
+    ],
+    "identifiers": [
+      "ENCRYPTED_USER_ID",
+      "QUOTE_ID",
+      "ENCRYPTED_QUOTE_ID"
+    ],
+    "raw_text": []
+  }
+}

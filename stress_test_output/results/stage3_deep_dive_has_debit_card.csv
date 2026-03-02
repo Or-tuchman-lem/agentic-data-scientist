@@ -1,0 +1,3 @@
+HAS_DEBIT_CARD,conversions,total_quotes,conversion_rate,avg_premium,avg_sales_per_quote
+True,1195,4872,0.2453,141.3668,34.67727604
+False,7505,52809,0.1421,88.6515,12.59737815

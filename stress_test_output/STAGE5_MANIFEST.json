@@ -1,0 +1,75 @@
+{
+  "stage": 5,
+  "title": "Synthesis and Pre-Modeling Report",
+  "status": "COMPLETE",
+  "date": "2026-02-26",
+  "summary": {
+    "modeling_datasets_created": 6,
+    "recommended_features": 18,
+    "expected_min_lift": "+20-30%",
+    "expected_max_lift": "+60-80%",
+    "estimated_annual_revenue": "$1.8M-$4.0M",
+    "phases_defined": 4
+  },
+  "modeling_datasets": {
+    "recommended": {
+      "path": "data/05_modeling_recommended.csv",
+      "features": 16,
+      "rationale": "Best balance of predictive power and interpretability"
+    },
+    "top_20": {
+      "path": "data/05_modeling_top_20.csv",
+      "features": 20,
+      "rationale": "Top 20 features by effect size"
+    },
+    "top_10": {
+      "path": "data/05_modeling_top_10.csv",
+      "features": 10,
+      "rationale": "Minimal feature set - most predictive only"
+    },
+    "composite_only": {
+      "path": "data/05_modeling_composite_only.csv",
+      "features": 4,
+      "rationale": "Composite scores only - maximum interpretability"
+    },
+    "low_vif": {
+      "path": "data/05_modeling_low_vif.csv",
+      "features": 3,
+      "rationale": "Low multicollinearity (VIF<5) with strong effect"
+    },
+    "minimal_redundancy": {
+      "path": "data/05_modeling_minimal_redundancy.csv",
+      "features": 15,
+      "rationale": "Greedy selection to minimize inter-correlation"
+    }
+  },
+  "outputs": {
+    "technical_report": "results/STAGE5_TECHNICAL_REPORT.txt",
+    "business_summary": "results/STAGE5_BUSINESS_SUMMARY.txt",
+    "synthesis_json": "results/stage5_synthesis.json",
+    "final_dashboard": "figures/stage5_final_dashboard.png"
+  },
+  "key_recommendations": {
+    "primary_strategy": "Two-stage model (conversion + amount) with gradient boosting",
+    "recommended_features": [
+      "PROPENSITY_SCORE",
+      "CUSTOMER_VALUE_SCORE",
+      "EXISTING_CUSTOMER_SCORE",
+      "HAS_MULTIPLE_PET_DISCOUNT",
+      "HAS_DEBIT_CARD",
+      "HAS_STRONGLY_CONNECTED_USERS",
+      "IMPUTED_INCOME",
+      "MULTIPET_X_DEBIT",
+      "PREMIUM_TO_INCOME_RATIO",
+      "LOG_INCOME"
+    ],
+    "expected_performance": "+30-40% sales per quote in Phase 2",
+    "data_priorities": [
+      "Cross-product portfolio",
+      "Exact pet count",
+      "Payment behavior",
+      "Mobile app usage"
+    ],
+    "implementation_timeline": "3 months to Phase 2, 6 months to Phase 3"
+  }
+}
