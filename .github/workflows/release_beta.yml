@@ -1,0 +1,44 @@
+name: Release Beta
+
+on:
+  push:
+
+jobs:
+  validate-and-release:
+    name: Validate & Release Beta
+    if: contains(github.event.head_commit.message, 'beta') && github.ref != 'refs/heads/main'
+    runs-on: lmnd-ubuntu22-small
+    timeout-minutes: 20
+
+    env:
+      AWS_ROLE_ARN: arn:aws:iam::338029825956:role/GithubRole-3109041
+      AWS_DEFAULT_REGION: us-east-1
+
+    permissions:
+      contents: write
+      id-token: write
+      pull-requests: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.LMND_GITHUB_TOKEN }}
+
+    - name: Cloning github actions repo
+      run: git clone https://${{ secrets.LMND_GITHUB_TOKEN }}@github.com/lemonade-hq/github-actions.git ../lmnd-github-actions
+
+    - name: Release Package
+      uses: ./../lmnd-github-actions/python-release-uv
+      env:
+        GH_TOKEN: ${{ secrets.LMND_GITHUB_TOKEN }}
+
+    - name: Summary
+      run: |
+        echo "## Install Beta Version" >> $GITHUB_STEP_SUMMARY
+        echo '```bash' >> $GITHUB_STEP_SUMMARY
+        echo 'export UV_INDEX_CODEARTIFACT_PASSWORD=$(aws codeartifact get-authorization-token --domain lemonade --domain-owner 338029825956 --query authorizationToken --output text --region us-east-1 --profile production)' >> $GITHUB_STEP_SUMMARY
+        echo 'export UV_INDEX_CODEARTIFACT_USERNAME=aws' >> $GITHUB_STEP_SUMMARY
+        echo "uv add lemonade-agentic-data-scientist==$PUBLISHED_VERSION" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY

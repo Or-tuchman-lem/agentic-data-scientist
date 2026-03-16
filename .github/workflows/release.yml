@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: contains(github.event.head_commit.message, 'no-release') == false
+    runs-on: lmnd-ubuntu22-small
+    timeout-minutes: 20
+
+    env:
+      AWS_ROLE_ARN: arn:aws:iam::338029825956:role/GithubRole-3109041
+      AWS_DEFAULT_REGION: us-east-1
+      GIT_COMMITTER_NAME: 'Python Semantic Release bot'
+
+    permissions:
+      contents: write
+      id-token: write
+      pull-requests: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.RELEASE_GIT_TOKEN }}
+
+    - name: Cloning github actions repo
+      run: git clone https://${{ secrets.LMND_GITHUB_TOKEN }}@github.com/lemonade-hq/github-actions.git ../lmnd-github-actions
+
+    - name: Release Package
+      uses: ./../lmnd-github-actions/python-release-uv
+      with:
+        is_official_release: true
+      env:
+        GH_TOKEN: ${{ secrets.RELEASE_GIT_TOKEN }}

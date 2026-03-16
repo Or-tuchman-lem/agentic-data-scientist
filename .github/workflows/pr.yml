@@ -1,0 +1,68 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_call:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate-title:
+    name: Validate PR title
+    runs-on: lmnd-ubuntu22-small
+    timeout-minutes: 5
+    steps:
+    - name: Validate semantic PR title
+      uses: amannn/action-semantic-pull-request@v6
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        types: |
+          feat
+          fix
+          docs
+          style
+          refactor
+          perf
+          test
+          build
+          ci
+          chore
+        subjectPattern: ^(?![A-Z]).+$
+        subjectPatternError: |
+          The subject "%s" found in the pull request title "%s"
+          didn't match the configured pattern. Please ensure that the subject
+          doesn't start with an uppercase character.
+        validateSingleCommit: false
+
+  test:
+    name: Quality Checks & Tests
+    if: contains(github.event.head_commit.message, '[skip ci]') == false
+    runs-on: lmnd-ubuntu22-small
+    timeout-minutes: 15
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6
+
+    - name: Setup uv
+      uses: astral-sh/setup-uv@v7
+      with:
+        enable-cache: false
+        version: latest
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: uv sync --all-extras
+
+    - name: Lint
+      run: uv run ruff check .
+
+    - name: Format check
+      run: uv run ruff format --check .
+
+    - name: Run tests
+      run: uv run pytest tests/ -v
