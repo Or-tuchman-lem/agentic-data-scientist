@@ -30,7 +30,7 @@ jobs:
       uses: actions/checkout@v6
       with:
         fetch-depth: 0
-        token: ${{ secrets.RELEASE_GIT_TOKEN }}
+        token: ${{ secrets.LMND_GITHUB_TOKEN }}
 
     - name: Cloning github actions repo
       run: git clone https://${{ secrets.LMND_GITHUB_TOKEN }}@github.com/lemonade-hq/github-actions.git ../lmnd-github-actions
@@ -40,4 +40,4 @@ jobs:
       with:
         is_official_release: true
       env:
-        GH_TOKEN: ${{ secrets.RELEASE_GIT_TOKEN }}
+        GH_TOKEN: ${{ secrets.LMND_GITHUB_TOKEN }}
